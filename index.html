@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Your Stripe Reader</title>
+    <!-- Stripe Terminal SDK -->
+    <script src="https://js.stripe.com/terminal/v1/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4f46e5;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .setup-step {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .setup-step.active {
+            border-color: #4f46e5;
+            background: #f8faff;
+        }
+
+        .setup-step.completed {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        .step-number.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .step-number.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .status.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #e5e7eb;
+        }
+
+        .status-indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-indicator.connected {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-indicator.disconnected {
+            background: #ef4444;
+        }
+
+        .status-indicator.connecting {
+            background: #f59e0b;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .bluetooth-instructions {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 15px 0;
+        }
+
+        .bluetooth-instructions h4 {
+            color: #0c4a6e;
+            margin-bottom: 10px;
+        }
+
+        .bluetooth-instructions ul {
+            margin-left: 20px;
+            color: #0c4a6e;
+        }
+
+        .reader-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 15px 0;
+        }
+
+        .reader-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .reader-info .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .reader-info .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .reader-info .info-item strong {
+            color: #212529;
+        }
+
+        .setup-instructions {
+            background: #f8f9fa;
+            border-left: 4px solid #4f46e5;
+            padding: 16px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .setup-instructions h4 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+
+        .setup-instructions ol {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+
+        .setup-instructions li {
+            margin-bottom: 8px;
+        }
+
+        .missing-params {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .missing-params h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .missing-params p {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+
+        .missing-params code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .completion-message {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .completion-message h3 {
+            color: #065f46;
+            margin-bottom: 10px;
+        }
+
+        .completion-message p {
+            color: #065f46;
+            line-height: 1.6;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 15px 0;
+        }
+
+        .next-steps h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .next-steps ul {
+            margin-left: 20px;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .next-steps li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Connect Your Stripe Reader</h1>
+                <p>Set up your card reader for in-person payments</p>
+            </div>
+
+            <!-- Parameters Check -->
+            <div id="params-check" class="hidden">
+                <div class="missing-params">
+                    <h3>⚠️ Missing Required Parameters</h3>
+                    <p>This page requires Stripe configuration parameters to function properly.</p>
+                    <p>Please ensure your URL includes:</p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li><code>publishable_key</code> - Your Stripe publishable key</li>
+                        <li><code>location_id</code> - Your Stripe Terminal location ID</li>
+                        <li><code>business_id</code> - Your business database row ID</li>
+                        <li><strong>Connection Token (choose one):</strong></li>
+                        <li style="margin-left: 20px;"><code>connection_token</code> - Pre-generated connection token</li>
+                        <li style="margin-left: 20px;"><code>connection_token_webhook</code> - Make.com webhook for generating tokens</li>
+                        <li><code>reader_storage_webhook</code> - Make.com webhook for saving reader data</li>
+                    </ul>
+                    <p><strong>Example with pre-generated token:</strong><br>
+                    <code>?publishable_key=pk_test_123&location_id=tml_abc&business_id=42&connection_token=pst_test_YWNjdF8x...&reader_storage_webhook=https://hook.make.com/def456</code></p>
+                    <p><strong>Example with webhook generation:</strong><br>
+                    <code>?publishable_key=pk_test_123&location_id=tml_abc&business_id=42&connection_token_webhook=https://hook.make.com/abc123&reader_storage_webhook=https://hook.make.com/def456</code></p>
+                </div>
+            </div>
+
+            <!-- Connect Reader Step -->
+            <div class="setup-step active" id="step1">
+                <div class="step-header">
+                    <div class="step-number active" id="step1-number">1</div>
+                    <div class="step-title">Connect Your Reader</div>
+                </div>
+                <div class="step-content">
+                    <div class="setup-instructions">
+                        <h4>Stripe Reader M2 Setup:</h4>
+                        <ol>
+                            <li>Charge your reader for 2-3 hours until all 4 LED lights are solid</li>
+                            <li>Press and hold the power button to turn on the reader</li>
+                            <li><strong>Important:</strong> DO NOT pair via your device's Bluetooth settings</li>
+                            <li>Click "Connect Reader" below - permissions will be requested automatically</li>
+                        </ol>
+                    </div>
+
+                    <div id="bluetooth-instructions" class="bluetooth-instructions hidden">
+                        <h4>Bluetooth Setup Required</h4>
+                        <ul>
+                            <li>Enable Bluetooth in your device settings</li>
+                            <li>Make sure your reader is powered on and nearby (within 3 feet)</li>
+                            <li>Grant location permission when prompted (required for Bluetooth scanning)</li>
+                            <li>Select your Stripe Reader from the device list when it appears</li>
+                        </ul>
+                    </div>
+
+                    <div class="connection-status">
+                        <div style="display: flex; align-items: center;">
+                            <div class="status-indicator disconnected" id="connection-indicator"></div>
+                            <span id="connection-text">Reader Disconnected</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="checkConnection()">Check Status</button>
+                    </div>
+
+                    <button class="btn" onclick="connectReader()" id="connect-btn">Connect Reader</button>
+                    
+                    <div id="connection-results" class="hidden"></div>
+                    
+                    <div id="reader-info" class="reader-info hidden">
+                        <h4>Connected Reader Information:</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span>Reader ID:</span>
+                                <strong id="reader-id">-</strong>
+                            </div>
+                            <div class="info-item">
+                                <span>Serial Number:</span>
+                                <strong id="reader-serial">-</strong>
+                            </div>
+                            <div class="info-item">
+                                <span>Battery Level:</span>
+                                <strong id="reader-battery">-</strong>
+                            </div>
+                            <div class="info-item">
+                                <span>Software Version:</span>
+                                <strong id="reader-version">-</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="completion-section" class="hidden">
+                        <div class="completion-message">
+                            <h3>🎉 Reader Connected Successfully!</h3>
+                            <p>Your Stripe Reader M2 is now connected and ready to accept payments. The reader has been saved to your account and can be used immediately for processing customer transactions.</p>
+                        </div>
+
+                        <div class="next-steps">
+                            <h4>Next Steps:</h4>
+                            <ul>
+                                <li>Your reader is now operational and ready for customer payments</li>
+                                <li>You can start accepting chip, tap, and swipe payments immediately</li>
+                                <li>The reader supports Apple Pay, Google Pay, and all major card brands</li>
+                                <li>Keep your reader charged - battery life is typically 8+ hours</li>
+                                <li>For support or questions, contact your account manager</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const CONFIG = {
+            publishableKey: urlParams.get('publishable_key'),
+            locationId: urlParams.get('location_id'),
+            businessId: urlParams.get('business_id'), // Database row ID (e.g., 42, 1001, etc.)
+            
+            // Option 1: Pre-generated connection token (bypasses webhook)
+            connectionToken: urlParams.get('connection_token'),
+            
+            // Option 2: Make.com webhook URLs (generates tokens on-demand)
+            connectionTokenWebhook: urlParams.get('connection_token_webhook'),
+            readerStorageWebhook: urlParams.get('reader_storage_webhook'),
+            
+            isDevelopment: window.location.hostname === 'localhost'
+        };
+
+        // Application State
+        let terminal = null;
+        let connectedReader = null;
+        let isConnected = false;
+        let readerData = null;
+
+        // Authentication Helper
+        function getAuthToken() {
+            return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+        }
+
+        // Webhook Helper
+        async function callWebhook(webhookUrl, data = {}) {
+            const token = getAuthToken();
+            
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { 'Authorization': `Bearer ${token}` })
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Webhook error' }));
+                throw new Error(error.message || `HTTP ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // Initialize Stripe Terminal
+        async function initializeTerminal() {
+            if (terminal) return terminal;
+
+            terminal = StripeTerminal.create({
+                onFetchConnectionToken: fetchConnectionToken,
+                onUnexpectedReaderDisconnect: handleReaderDisconnect,
+                onConnectionStatusChange: handleConnectionStatusChange
+            });
+
+            return terminal;
+        }
+
+        async function fetchConnectionToken() {
+            try {
+                // Option 1: Use pre-generated token if provided
+                if (CONFIG.connectionToken) {
+                    console.log('Using pre-generated connection token');
+                    return CONFIG.connectionToken;
+                }
+                
+                // Option 2: Generate token via webhook
+                if (CONFIG.connectionTokenWebhook) {
+                    console.log('Generating connection token via webhook');
+                    const response = await callWebhook(CONFIG.connectionTokenWebhook, {
+                        business_id: CONFIG.businessId,
+                        location_id: CONFIG.locationId,
+                        metadata: {
+                            source: 'reader_connection_page',
+                            timestamp: new Date().toISOString()
+                        }
+                    });
+                    return response.secret;
+                }
+                
+                // Neither option available
+                throw new Error('No connection token method available. Provide either connection_token or connection_token_webhook parameter.');
+                
+            } catch (error) {
+                console.error('Failed to fetch connection token:', error);
+                throw error;
+            }
+        }
+
+        function handleReaderDisconnect() {
+            isConnected = false;
+            connectedReader = null;
+            updateConnectionStatus('disconnected', 'Reader Disconnected');
+            showStatus('Reader disconnected unexpectedly. Please reconnect.', 'warning');
+            
+            // Reset UI state
+            document.getElementById('connect-btn').disabled = false;
+            document.getElementById('connect-btn').innerHTML = 'Reconnect Reader';
+            document.getElementById('reader-info').classList.add('hidden');
+            document.getElementById('completion-section').classList.add('hidden');
+            updateStepStatus('active');
+        }
+
+        function handleConnectionStatusChange(status) {
+            console.log('Connection status changed:', status);
+        }
+
+        // UI Helper Functions
+        function updateStepStatus(status) {
+            const step = document.getElementById('step1');
+            const number = document.getElementById('step1-number');
+            
+            step.classList.remove('active', 'completed');
+            number.classList.remove('active', 'completed');
+            
+            if (status === 'active') {
+                step.classList.add('active');
+                number.classList.add('active');
+            } else if (status === 'completed') {
+                step.classList.add('completed');
+                number.classList.add('completed');
+            }
+        }
+
+        function updateConnectionStatus(status, text) {
+            const indicator = document.getElementById('connection-indicator');
+            const textElement = document.getElementById('connection-text');
+            
+            indicator.className = `status-indicator ${status}`;
+            textElement.textContent = text;
+        }
+
+        function showStatus(message, type = 'info') {
+            const container = document.getElementById('connection-results');
+            container.innerHTML = `<div class="status ${type}">${message}</div>`;
+            container.classList.remove('hidden');
+        }
+
+        function showLoading(buttonId, text) {
+            const btn = document.getElementById(buttonId);
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading"></span>${text}`;
+        }
+
+        function hideLoading(buttonId, text) {
+            const btn = document.getElementById(buttonId);
+            btn.disabled = false;
+            btn.innerHTML = text;
+        }
+
+        function updateReaderInfo(reader) {
+            document.getElementById('reader-id').textContent = reader.id;
+            document.getElementById('reader-serial').textContent = reader.serial_number || 'Unknown';
+            document.getElementById('reader-battery').textContent = reader.battery_level ? `${reader.battery_level}%` : 'Unknown';
+            document.getElementById('reader-version').textContent = reader.device_sw_version || 'Unknown';
+            document.getElementById('reader-info').classList.remove('hidden');
+        }
+
+        function showCompletionMessage() {
+            document.getElementById('completion-section').classList.remove('hidden');
+            updateStepStatus('completed');
+        }
+
+        // Reader Connection
+        async function connectReader() {
+            try {
+                showLoading('connect-btn', 'Initializing...');
+                updateConnectionStatus('connecting', 'Initializing...');
+                
+                // Initialize Stripe Terminal
+                await initializeTerminal();
+                
+                // Check if Web Bluetooth is supported
+                if (!navigator.bluetooth) {
+                    throw new Error('Web Bluetooth is not supported in this browser. Please use Chrome, Edge, or another compatible browser.');
+                }
+
+                showLoading('connect-btn', 'Requesting Permissions...');
+                
+                // Request location permission (required for Bluetooth scanning)
+                if (navigator.geolocation) {
+                    await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            () => resolve(),
+                            (error) => {
+                                if (error.code === error.PERMISSION_DENIED) {
+                                    reject(new Error('Location permission is required for Bluetooth scanning. Please enable location access.'));
+                                } else {
+                                    resolve(); // Continue even if location not available
+                                }
+                            },
+                            { timeout: 5000 }
+                        );
+                    });
+                }
+
+                showLoading('connect-btn', 'Scanning for Readers...');
+                updateConnectionStatus('connecting', 'Scanning for readers...');
+
+                // Discover readers using Stripe Terminal
+                const discoverResult = await terminal.discoverReaders({
+                    discoveryMethod: 'bluetooth_scan',
+                    simulated: CONFIG.isDevelopment
+                });
+
+                if (discoverResult.error) {
+                    if (discoverResult.error.code === 'bluetooth_disabled') {
+                        document.getElementById('bluetooth-instructions').classList.remove('hidden');
+                        throw new Error('Bluetooth is disabled. Please enable Bluetooth and try again.');
+                    }
+                    throw new Error(discoverResult.error.message);
+                }
+
+                const readers = discoverResult.discoveredReaders;
+                const m2Readers = readers.filter(reader => reader.device_type === 'stripe_m2');
+
+                if (m2Readers.length === 0) {
+                    throw new Error('No Stripe Reader M2 devices found. Please ensure your reader is powered on and nearby.');
+                }
+
+                // Connect to the first M2 reader found
+                showLoading('connect-btn', 'Connecting...');
+                updateConnectionStatus('connecting', 'Connecting to reader...');
+
+                const connectResult = await terminal.connectReader(m2Readers[0]);
+
+                if (connectResult.error) {
+                    throw new Error(connectResult.error.message);
+                }
+
+                connectedReader = connectResult.reader;
+                
+                // Extract reader data for database storage
+                readerData = {
+                    stripe_reader_id: connectedReader.id,
+                    serial_number: connectedReader.serial_number,
+                    device_type: connectedReader.device_type,
+                    label: connectedReader.label || `M2-${connectedReader.serial_number}`,
+                    location_id: connectedReader.location,
+                    battery_level: connectedReader.battery_level,
+                    device_sw_version: connectedReader.device_sw_version,
+                    ip_address: connectedReader.ip_address,
+                    status: 'connected',
+                    business_id: CONFIG.businessId,
+                    connected_at: new Date().toISOString()
+                };
+
+                // Save reader data to database via webhook
+                await callWebhook(CONFIG.readerStorageWebhook, {
+                    ...readerData,
+                    metadata: {
+                        source: 'reader_connection_page',
+                        timestamp: new Date().toISOString()
+                    }
+                });
+
+                // Connection successful
+                isConnected = true;
+                updateConnectionStatus('connected', 'M2 Reader Connected');
+                updateReaderInfo(connectedReader);
+                hideLoading('connect-btn', '✓ Connected Successfully');
+                document.getElementById('connect-btn').disabled = true;
+                
+                showCompletionMessage();
+                showStatus('✅ Reader connected and saved successfully! Your reader is now operational and ready to accept payments.', 'success');
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+                updateConnectionStatus('disconnected', 'Connection Failed');
+                hideLoading('connect-btn', 'Retry Connection');
+                
+                if (error.message.includes('Bluetooth')) {
+                    document.getElementById('bluetooth-instructions').classList.remove('hidden');
+                }
+                
+                showStatus(`❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Check Connection Status
+        function checkConnection() {
+            if (isConnected && connectedReader) {
+                updateConnectionStatus('connected', `M2 Connected - ${connectedReader.battery_level || 'Unknown'}% battery`);
+                showStatus('✅ Reader is connected and ready to accept payments.', 'success');
+            } else {
+                updateConnectionStatus('disconnected', 'M2 Reader Disconnected');
+                showStatus('❌ Reader is not connected. Please connect your reader first.', 'error');
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Reader Connection Page initialized');
+            
+            // Check required parameters
+            const hasConnectionToken = CONFIG.connectionToken || CONFIG.connectionTokenWebhook;
+            
+            if (!CONFIG.publishableKey || !CONFIG.locationId || !CONFIG.businessId || 
+                !hasConnectionToken || !CONFIG.readerStorageWebhook) {
+                document.getElementById('params-check').classList.remove('hidden');
+                document.querySelector('.setup-step').style.display = 'none';
+                return;
+            }
+
+            console.log('Configuration loaded:', {
+                publishableKey: CONFIG.publishableKey.substring(0, 12) + '...',
+                locationId: CONFIG.locationId,
+                businessId: CONFIG.businessId,
+                connectionToken: CONFIG.connectionToken ? 'Pre-generated token provided' : 'Not provided',
+                connectionTokenWebhook: CONFIG.connectionTokenWebhook ? 'Webhook provided' : 'Not provided',
+                readerStorageWebhook: CONFIG.readerStorageWebhook ? 'Provided' : 'Missing',
+                tokenMethod: CONFIG.connectionToken ? 'Pre-generated' : 'Webhook generation'
+            });
+
+            // Initialize Terminal
+            initializeTerminal().catch(console.error);
+        });
+
+        // Error handling for unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            showStatus(`❌ Unexpected error: ${event.reason.message}`, 'error');
+        });
+    </script>
+</body>
+</html>
