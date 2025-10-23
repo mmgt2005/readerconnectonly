@@ -202,6 +202,12 @@
             gap: 10px;
         }
 
+        .connection-status > div:last-child {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .status-indicator {
             width: 12px;
             height: 12px;
@@ -459,6 +465,18 @@
                 justify-content: center;
             }
 
+            .connection-status > div:last-child {
+                justify-content: center;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .connection-status > div:last-child .btn {
+                width: 100%;
+                max-width: 250px;
+                margin: 2px auto;
+            }
+
             .reader-info .info-grid {
                 grid-template-columns: 1fr;
             }
@@ -694,7 +712,10 @@
                             <div class="status-indicator disconnected" id="connection-indicator"></div>
                             <span id="connection-text">Reader Disconnected</span>
                         </div>
-                        <button class="btn btn-secondary" onclick="checkPermissionsAndConnection()">Check Status</button>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="requestLocationPermission()" id="location-btn">Grant Location Permission</button>
+                            <button class="btn btn-secondary" onclick="checkPermissionsAndConnection()">Check Status</button>
+                        </div>
                     </div>
 
                     <button class="btn" onclick="connectReader()" id="connect-btn">Connect Reader</button>
@@ -927,48 +948,79 @@
                     throw new Error('Web Bluetooth is not supported in this browser. Please use Chrome, Edge, or another compatible browser.');
                 }
 
+                // Check current permission status
+                const permissions = await checkPermissions();
+                
+                if (permissions.locationState === 'denied') {
+                    document.getElementById('location-permission-help').classList.remove('hidden');
+                    throw new Error('Location permission was previously denied. Please use the "Grant Location Permission" button or follow the manual instructions below to enable it.');
+                }
+
                 // Show location permission explanation
-                showStatus('📍 Location permission is required for Bluetooth scanning. This is a browser security requirement and your location data is not stored or transmitted.', 'info');
+                showStatus('📍 Requesting location permission for Bluetooth scanning...', 'info');
                 
                 showLoading('connect-btn', 'Requesting Permissions...');
                 
-                // Request location permission (required for Bluetooth scanning)
+                // Try multiple methods to get location permission
+                let locationGranted = false;
+                
                 if (navigator.geolocation) {
                     try {
+                        // Method 1: Try with high accuracy first (more likely to prompt)
                         await new Promise((resolve, reject) => {
                             navigator.geolocation.getCurrentPosition(
                                 () => {
-                                    console.log('Location permission granted');
+                                    console.log('Location permission granted (method 1)');
+                                    locationGranted = true;
                                     resolve();
                                 },
                                 (error) => {
-                                    console.log('Location permission error:', error.code, error.message);
-                                    if (error.code === error.PERMISSION_DENIED) {
-                                        reject(new Error('LOCATION_PERMISSION_DENIED'));
-                                    } else if (error.code === error.POSITION_UNAVAILABLE) {
-                                        console.log('Location unavailable, but continuing...');
-                                        resolve(); // Continue anyway
-                                    } else if (error.code === error.TIMEOUT) {
-                                        console.log('Location request timed out, but continuing...');
-                                        resolve(); // Continue anyway
-                                    } else {
-                                        resolve(); // Continue for any other error
-                                    }
+                                    console.log('Location permission method 1 failed:', error.code);
+                                    reject(error);
                                 },
                                 { 
-                                    timeout: 10000,
-                                    enableHighAccuracy: false,
-                                    maximumAge: 60000
+                                    timeout: 8000,
+                                    enableHighAccuracy: true, // This is more likely to trigger a prompt
+                                    maximumAge: 0
                                 }
                             );
                         });
-                    } catch (permissionError) {
-                        if (permissionError.message === 'LOCATION_PERMISSION_DENIED') {
-                            // Show detailed permission instructions
-                            document.getElementById('location-permission-help').classList.remove('hidden');
-                            throw new Error('Location permission is required for Bluetooth scanning. Please see the instructions below to enable location access, then try connecting again.');
-                        } else {
-                            throw permissionError;
+                    } catch (firstAttemptError) {
+                        console.log('First location attempt failed, trying method 2...');
+                        
+                        // Method 2: Try with lower accuracy settings
+                        try {
+                            await new Promise((resolve, reject) => {
+                                navigator.geolocation.getCurrentPosition(
+                                    () => {
+                                        console.log('Location permission granted (method 2)');
+                                        locationGranted = true;
+                                        resolve();
+                                    },
+                                    (error) => {
+                                        console.log('Location permission method 2 failed:', error.code);
+                                        if (error.code === error.PERMISSION_DENIED) {
+                                            reject(new Error('LOCATION_PERMISSION_DENIED'));
+                                        } else {
+                                            // For timeout or position unavailable, continue anyway
+                                            console.log('Location unavailable but continuing...');
+                                            resolve();
+                                        }
+                                    },
+                                    { 
+                                        timeout: 12000,
+                                        enableHighAccuracy: false,
+                                        maximumAge: 300000 // 5 minutes
+                                    }
+                                );
+                            });
+                        } catch (secondAttemptError) {
+                            if (secondAttemptError.message === 'LOCATION_PERMISSION_DENIED') {
+                                document.getElementById('location-permission-help').classList.remove('hidden');
+                                throw new Error('Location permission denied. Please click "Grant Location Permission" button or follow the manual instructions below to enable location access.');
+                            }
+                            // For other errors, continue
+                            console.log('Location permission attempts failed, but continuing...');
                         }
                     }
                 } else {
@@ -988,12 +1040,11 @@
                     if (discoverResult.error.code === 'bluetooth_disabled') {
                         document.getElementById('bluetooth-instructions').classList.remove('hidden');
                         throw new Error('Bluetooth is disabled. Please enable Bluetooth in your device settings and try again.');
-                    } else if (discoverResult.error.code === 'location_services_disabled') {
+                    } else if (discoverResult.error.code === 'location_services_disabled' || 
+                              discoverResult.error.message.includes('location') || 
+                              discoverResult.error.message.includes('permission')) {
                         document.getElementById('location-permission-help').classList.remove('hidden');
-                        throw new Error('Location services are disabled. Please enable location services and grant location permission to this website.');
-                    } else if (discoverResult.error.message.includes('location') || discoverResult.error.message.includes('permission')) {
-                        document.getElementById('location-permission-help').classList.remove('hidden');
-                        throw new Error('Location permission issue: ' + discoverResult.error.message);
+                        throw new Error('Location permission required. Please use the "Grant Location Permission" button or follow the manual instructions below.');
                     }
                     throw new Error(discoverResult.error.message);
                 }
@@ -1047,6 +1098,7 @@
                 updateReaderInfo(connectedReader);
                 hideLoading('connect-btn', '✓ Connected Successfully');
                 document.getElementById('connect-btn').disabled = true;
+                document.getElementById('location-btn').style.display = 'none';
                 
                 showCompletionMessage();
                 showStatus('✅ Reader connected and saved successfully! Your reader is now operational and ready to accept payments.', 'success');
@@ -1073,6 +1125,7 @@
             const results = {
                 bluetooth: false,
                 location: false,
+                locationState: 'unknown',
                 supported: false
             };
 
@@ -1084,12 +1137,54 @@
                 try {
                     const locationPermission = await navigator.permissions.query({ name: 'geolocation' });
                     results.location = locationPermission.state === 'granted';
+                    results.locationState = locationPermission.state; // 'granted', 'denied', 'prompt'
                 } catch (error) {
                     console.log('Could not check location permission status:', error);
                 }
             }
 
             return results;
+        }
+
+        // Manual location permission request
+        async function requestLocationPermission() {
+            try {
+                showLoading('location-btn', 'Requesting...');
+                
+                await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            console.log('Location permission granted:', position);
+                            showStatus('✅ Location permission granted! You can now connect your reader.', 'success');
+                            document.getElementById('location-btn').style.display = 'none';
+                            resolve(position);
+                        },
+                        (error) => {
+                            console.log('Location permission error:', error);
+                            if (error.code === error.PERMISSION_DENIED) {
+                                document.getElementById('location-permission-help').classList.remove('hidden');
+                                showStatus('❌ Location permission denied. Please see instructions below to enable it manually.', 'error');
+                                reject(new Error('Location permission denied'));
+                            } else {
+                                // Other errors (position unavailable, timeout) - still allow connection
+                                showStatus('⚠️ Location not available, but you can still try connecting.', 'warning');
+                                resolve();
+                            }
+                        },
+                        { 
+                            timeout: 15000,
+                            enableHighAccuracy: false,
+                            maximumAge: 60000
+                        }
+                    );
+                });
+                
+                hideLoading('location-btn', 'Grant Location Permission');
+                
+            } catch (error) {
+                hideLoading('location-btn', 'Try Again');
+                console.error('Permission request failed:', error);
+            }
         }
 
         // Show permission status
@@ -1102,12 +1197,21 @@
             if (!permissions.supported) {
                 statusMessage = '❌ Web Bluetooth not supported. Please use Chrome, Edge, or Brave browser.';
                 statusType = 'error';
+                document.getElementById('location-btn').style.display = 'none';
+                document.getElementById('connect-btn').disabled = true;
             } else if (permissions.location) {
                 statusMessage = '✅ All permissions ready. You can connect your reader.';
                 statusType = 'success';
+                document.getElementById('location-btn').style.display = 'none';
+            } else if (permissions.locationState === 'denied') {
+                statusMessage = '🚫 Location permission was denied. Click "Grant Location Permission" below or see manual instructions.';
+                statusType = 'error';
+                document.getElementById('location-permission-help').classList.remove('hidden');
+                document.getElementById('location-btn').style.display = 'inline-flex';
             } else {
-                statusMessage = '⚠️ Location permission will be requested when you connect. This is required for Bluetooth device discovery.';
+                statusMessage = '⚠️ Location permission will be requested when you connect. You can also grant it manually below.';
                 statusType = 'warning';
+                document.getElementById('location-btn').style.display = 'inline-flex';
             }
 
             showStatus(statusMessage, statusType);
