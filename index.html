@@ -639,9 +639,14 @@
                         <ol>
                             <li>Charge your reader for 2-3 hours until all 4 LED lights are solid</li>
                             <li>Press and hold the power button to turn on the reader</li>
+                            <li><strong>Enable location services</strong> in your device settings (required for Bluetooth scanning)</li>
                             <li><strong>Important:</strong> DO NOT pair via your device's Bluetooth settings</li>
-                            <li>Click "Connect Reader" below - permissions will be requested automatically</li>
+                            <li>Click "Connect Reader" below - you'll be prompted for location and Bluetooth permissions</li>
+                            <li>When prompted, <strong>allow location access</strong> - this enables Bluetooth device discovery</li>
                         </ol>
+                        <div style="background: #f0f9ff; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; color: #0c4a6e;">
+                            <strong>💡 Why location permission?</strong> Browsers require location access for Bluetooth scanning due to privacy regulations. Your location is not stored or transmitted.
+                        </div>
                     </div>
 
                     <div id="bluetooth-instructions" class="bluetooth-instructions hidden">
@@ -654,12 +659,42 @@
                         </ul>
                     </div>
 
+                    <div id="location-permission-help" class="bluetooth-instructions hidden" style="background: #fef3c7; border-color: #f59e0b;">
+                        <h4>📍 Location Permission Required</h4>
+                        <p style="margin-bottom: 12px; color: #92400e;">
+                            <strong>Why is location needed?</strong> Modern browsers require location permission for Bluetooth scanning due to privacy regulations. Your location data is not stored or transmitted - it's only used to enable Bluetooth device discovery.
+                        </p>
+                        
+                        <h5 style="color: #92400e; margin-bottom: 8px;">Chrome / Edge / Brave:</h5>
+                        <ol style="color: #92400e; margin-bottom: 12px;">
+                            <li>Click the location icon (🔒 or 🌐) in the address bar</li>
+                            <li>Change "Location" from "Block" to "Allow"</li>
+                            <li>Refresh the page and try connecting again</li>
+                        </ol>
+
+                        <h5 style="color: #92400e; margin-bottom: 8px;">Alternative method:</h5>
+                        <ol style="color: #92400e; margin-bottom: 12px;">
+                            <li>Go to <strong>Settings</strong> → <strong>Privacy and Security</strong> → <strong>Site Settings</strong></li>
+                            <li>Click <strong>Location</strong></li>
+                            <li>Find this website and change to "Allow"</li>
+                            <li>Refresh the page and try connecting again</li>
+                        </ol>
+
+                        <h5 style="color: #92400e; margin-bottom: 8px;">Mobile devices:</h5>
+                        <ol style="color: #92400e;">
+                            <li>Enable <strong>Location Services</strong> in your device settings</li>
+                            <li>Enable location permission for your browser app</li>
+                            <li>Allow location access when prompted by the website</li>
+                            <li>Make sure Bluetooth is also enabled</li>
+                        </ol>
+                    </div>
+
                     <div class="connection-status">
                         <div style="display: flex; align-items: center;">
                             <div class="status-indicator disconnected" id="connection-indicator"></div>
                             <span id="connection-text">Reader Disconnected</span>
                         </div>
-                        <button class="btn btn-secondary" onclick="checkConnection()">Check Status</button>
+                        <button class="btn btn-secondary" onclick="checkPermissionsAndConnection()">Check Status</button>
                     </div>
 
                     <button class="btn" onclick="connectReader()" id="connect-btn">Connect Reader</button>
@@ -892,23 +927,52 @@
                     throw new Error('Web Bluetooth is not supported in this browser. Please use Chrome, Edge, or another compatible browser.');
                 }
 
+                // Show location permission explanation
+                showStatus('📍 Location permission is required for Bluetooth scanning. This is a browser security requirement and your location data is not stored or transmitted.', 'info');
+                
                 showLoading('connect-btn', 'Requesting Permissions...');
                 
                 // Request location permission (required for Bluetooth scanning)
                 if (navigator.geolocation) {
-                    await new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(
-                            () => resolve(),
-                            (error) => {
-                                if (error.code === error.PERMISSION_DENIED) {
-                                    reject(new Error('Location permission is required for Bluetooth scanning. Please enable location access.'));
-                                } else {
-                                    resolve(); // Continue even if location not available
+                    try {
+                        await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(
+                                () => {
+                                    console.log('Location permission granted');
+                                    resolve();
+                                },
+                                (error) => {
+                                    console.log('Location permission error:', error.code, error.message);
+                                    if (error.code === error.PERMISSION_DENIED) {
+                                        reject(new Error('LOCATION_PERMISSION_DENIED'));
+                                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                                        console.log('Location unavailable, but continuing...');
+                                        resolve(); // Continue anyway
+                                    } else if (error.code === error.TIMEOUT) {
+                                        console.log('Location request timed out, but continuing...');
+                                        resolve(); // Continue anyway
+                                    } else {
+                                        resolve(); // Continue for any other error
+                                    }
+                                },
+                                { 
+                                    timeout: 10000,
+                                    enableHighAccuracy: false,
+                                    maximumAge: 60000
                                 }
-                            },
-                            { timeout: 5000 }
-                        );
-                    });
+                            );
+                        });
+                    } catch (permissionError) {
+                        if (permissionError.message === 'LOCATION_PERMISSION_DENIED') {
+                            // Show detailed permission instructions
+                            document.getElementById('location-permission-help').classList.remove('hidden');
+                            throw new Error('Location permission is required for Bluetooth scanning. Please see the instructions below to enable location access, then try connecting again.');
+                        } else {
+                            throw permissionError;
+                        }
+                    }
+                } else {
+                    console.log('Geolocation not available, continuing without it...');
                 }
 
                 showLoading('connect-btn', 'Scanning for Readers...');
@@ -923,7 +987,13 @@
                 if (discoverResult.error) {
                     if (discoverResult.error.code === 'bluetooth_disabled') {
                         document.getElementById('bluetooth-instructions').classList.remove('hidden');
-                        throw new Error('Bluetooth is disabled. Please enable Bluetooth and try again.');
+                        throw new Error('Bluetooth is disabled. Please enable Bluetooth in your device settings and try again.');
+                    } else if (discoverResult.error.code === 'location_services_disabled') {
+                        document.getElementById('location-permission-help').classList.remove('hidden');
+                        throw new Error('Location services are disabled. Please enable location services and grant location permission to this website.');
+                    } else if (discoverResult.error.message.includes('location') || discoverResult.error.message.includes('permission')) {
+                        document.getElementById('location-permission-help').classList.remove('hidden');
+                        throw new Error('Location permission issue: ' + discoverResult.error.message);
                     }
                     throw new Error(discoverResult.error.message);
                 }
@@ -932,7 +1002,7 @@
                 const m2Readers = readers.filter(reader => reader.device_type === 'stripe_m2');
 
                 if (m2Readers.length === 0) {
-                    throw new Error('No Stripe Reader M2 devices found. Please ensure your reader is powered on and nearby.');
+                    throw new Error('No Stripe Reader M2 devices found. Please ensure your reader is powered on and nearby (within 3 feet).');
                 }
 
                 // Connect to the first M2 reader found
@@ -988,10 +1058,59 @@
                 
                 if (error.message.includes('Bluetooth')) {
                     document.getElementById('bluetooth-instructions').classList.remove('hidden');
+                } 
+                
+                if (error.message.includes('location') || error.message.includes('Location')) {
+                    document.getElementById('location-permission-help').classList.remove('hidden');
                 }
                 
                 showStatus(`❌ Connection failed: ${error.message}`, 'error');
             }
+        }
+
+        // Check permissions proactively
+        async function checkPermissions() {
+            const results = {
+                bluetooth: false,
+                location: false,
+                supported: false
+            };
+
+            // Check Web Bluetooth support
+            results.supported = !!navigator.bluetooth;
+
+            // Check location permission status
+            if (navigator.permissions) {
+                try {
+                    const locationPermission = await navigator.permissions.query({ name: 'geolocation' });
+                    results.location = locationPermission.state === 'granted';
+                } catch (error) {
+                    console.log('Could not check location permission status:', error);
+                }
+            }
+
+            return results;
+        }
+
+        // Show permission status
+        async function showPermissionStatus() {
+            const permissions = await checkPermissions();
+            
+            let statusMessage = '';
+            let statusType = 'info';
+
+            if (!permissions.supported) {
+                statusMessage = '❌ Web Bluetooth not supported. Please use Chrome, Edge, or Brave browser.';
+                statusType = 'error';
+            } else if (permissions.location) {
+                statusMessage = '✅ All permissions ready. You can connect your reader.';
+                statusType = 'success';
+            } else {
+                statusMessage = '⚠️ Location permission will be requested when you connect. This is required for Bluetooth device discovery.';
+                statusType = 'warning';
+            }
+
+            showStatus(statusMessage, statusType);
         }
 
         // Check Connection Status
@@ -1002,6 +1121,17 @@
             } else {
                 updateConnectionStatus('disconnected', 'M2 Reader Disconnected');
                 showStatus('❌ Reader is not connected. Please connect your reader first.', 'error');
+            }
+        }
+
+        // Check both permissions and connection status
+        async function checkPermissionsAndConnection() {
+            if (isConnected && connectedReader) {
+                // Show connection status if connected
+                checkConnection();
+            } else {
+                // Show permission status if not connected
+                await showPermissionStatus();
             }
         }
 
@@ -1031,6 +1161,9 @@
 
             // Initialize Terminal
             initializeTerminal().catch(console.error);
+
+            // Check permissions and show status
+            showPermissionStatus();
         });
 
         // Error handling for unhandled promise rejections
