@@ -279,6 +279,36 @@
             line-height: 1.4;
         }
 
+        .auto-close-countdown {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .auto-close-countdown p {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .auto-close-countdown #countdown {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #fef3c7;
+        }
+
+        #cancel-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        #cancel-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
         .instructions {
             background: #f8faff;
             border: 1px solid #e0e7ff;
@@ -598,7 +628,9 @@
             connectionTokenWebhook: urlParams.get('connectionTokenWebhook') || 'your_webhook_url',
             readerStorageWebhook: urlParams.get('readerStorageWebhook') || 'your_storage_webhook',
             embeddedMode: urlParams.get('embedded') === 'true',
-            parentOrigin: urlParams.get('parentOrigin') || '*'
+            parentOrigin: urlParams.get('parentOrigin') || '*',
+            autoClose: urlParams.get('autoClose') !== 'false', // Default true, set to false to disable
+            autoCloseDelay: parseInt(urlParams.get('autoCloseDelay')) || 5 // Default 5 seconds
         };
 
         // Apply embedded mode styling if requested
@@ -719,6 +751,11 @@
                     break;
                 case 'DISCONNECT_READER':
                     if (terminal && isConnected) {
+                        // Cancel auto-close if active
+                        if (countdownInterval) {
+                            cancelAutoClose();
+                        }
+                        
                         terminal.disconnectReader().then(() => {
                             isConnected = false;
                             connectedReader = null;
@@ -731,6 +768,17 @@
                             showStatus('🔌 Reader disconnected successfully.', 'info');
                         });
                     }
+                    break;
+                case 'TRIGGER_AUTO_CLOSE':
+                    if (isConnected && CONFIG.autoClose) {
+                        showCompletionMessage(); // This will start the countdown
+                    }
+                    break;
+                case 'CANCEL_AUTO_CLOSE':
+                    cancelAutoClose();
+                    break;
+                case 'CLOSE_WINDOW':
+                    closeWindow();
                     break;
             }
         });
@@ -782,9 +830,35 @@
             });
         }
 
-        // Enhanced completion with postMessage
+        // Enhanced completion with postMessage and auto-close
         function showCompletionMessage() {
             document.getElementById('completion-message').classList.remove('hidden');
+            
+            // Check if auto-close is enabled
+            if (CONFIG.autoClose) {
+                // Add countdown element to completion message
+                const completionDiv = document.getElementById('completion-message');
+                completionDiv.innerHTML = `
+                    <h3>🎉 Setup Complete!</h3>
+                    <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
+                    <div class="auto-close-countdown">
+                        <p>🕐 Closing automatically in <span id="countdown">${CONFIG.autoCloseDelay}</span> seconds...</p>
+                        <button id="cancel-close-btn" class="btn btn-secondary" onclick="cancelAutoClose()">
+                            Stay Open
+                        </button>
+                    </div>
+                `;
+                
+                // Start countdown timer
+                startAutoCloseCountdown();
+            } else {
+                // Show completion message without auto-close
+                const completionDiv = document.getElementById('completion-message');
+                completionDiv.innerHTML = `
+                    <h3>🎉 Setup Complete!</h3>
+                    <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
+                `;
+            }
             
             // Notify parent of successful completion
             notifyParent({
@@ -792,9 +866,126 @@
                 data: {
                     reader: connectedReader,
                     readerData: readerData,
-                    success: true
+                    success: true,
+                    autoClose: CONFIG.autoClose,
+                    autoCloseIn: CONFIG.autoClose ? CONFIG.autoCloseDelay : null
                 }
             });
+        }
+
+        // Auto-close countdown functionality
+        let autoCloseTimer = null;
+        let countdownInterval = null;
+
+        function startAutoCloseCountdown() {
+            let timeLeft = CONFIG.autoCloseDelay;
+            const countdownElement = document.getElementById('countdown');
+            
+            // Update countdown display every second
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (countdownElement) {
+                    countdownElement.textContent = timeLeft;
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    closeWindow();
+                }
+                
+                // Notify parent of countdown progress
+                notifyParent({
+                    type: 'AUTO_CLOSE_COUNTDOWN',
+                    data: {
+                        timeLeft: timeLeft,
+                        willClose: timeLeft <= 0
+                    }
+                });
+            }, 1000);
+        }
+
+        function cancelAutoClose() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            
+            // Update completion message
+            const completionDiv = document.getElementById('completion-message');
+            completionDiv.innerHTML = `
+                <h3>🎉 Setup Complete!</h3>
+                <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
+                <p style="opacity: 0.8; margin-top: 10px;">Auto-close cancelled. Window will remain open.</p>
+            `;
+            
+            // Notify parent that auto-close was cancelled
+            notifyParent({
+                type: 'AUTO_CLOSE_CANCELLED',
+                data: {
+                    message: 'User cancelled auto-close',
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
+        function closeWindow() {
+            // Notify parent before closing
+            notifyParent({
+                type: 'WINDOW_CLOSING',
+                data: {
+                    reason: 'auto_close_after_connection',
+                    timestamp: new Date().toISOString()
+                }
+            });
+            
+            // Try different methods to close the window
+            try {
+                // For popup windows
+                if (window.opener) {
+                    window.close();
+                    return;
+                }
+                
+                // For iframes - ask parent to close/hide the iframe
+                if (window.parent !== window) {
+                    notifyParent({
+                        type: 'REQUEST_CLOSE_IFRAME',
+                        data: {
+                            message: 'Please close or hide the iframe',
+                            timestamp: new Date().toISOString()
+                        }
+                    });
+                    return;
+                }
+                
+                // For standalone windows
+                window.close();
+                
+                // If window.close() doesn't work (e.g., not opened by script)
+                // redirect to a success page or show a message
+                setTimeout(() => {
+                    document.body.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                            <div>
+                                <h2 style="color: #10b981; margin-bottom: 10px;">✅ Connection Complete!</h2>
+                                <p style="color: #6b7280;">You can safely close this window.</p>
+                            </div>
+                        </div>
+                    `;
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error closing window:', error);
+                // Show message if closing fails
+                document.body.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                        <div>
+                            <h2 style="color: #10b981; margin-bottom: 10px;">✅ Connection Complete!</h2>
+                            <p style="color: #6b7280;">You can safely close this window.</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // Generic webhook caller
@@ -903,6 +1094,12 @@
                     onFetchConnectionToken: () => Promise.resolve(connectionToken),
                     onUnexpectedReaderDisconnect: () => {
                         console.log('Reader unexpectedly disconnected');
+                        
+                        // Cancel auto-close if active
+                        if (countdownInterval) {
+                            cancelAutoClose();
+                        }
+                        
                         isConnected = false;
                         connectedReader = null;
                         readerData = null;
@@ -1247,7 +1444,9 @@
                     config: {
                         embeddedMode: CONFIG.embeddedMode,
                         hasConnectionToken: !!CONFIG.connectionToken,
-                        hasWebhooks: !!(CONFIG.connectionTokenWebhook && CONFIG.readerStorageWebhook)
+                        hasWebhooks: !!(CONFIG.connectionTokenWebhook && CONFIG.readerStorageWebhook),
+                        autoClose: CONFIG.autoClose,
+                        autoCloseDelay: CONFIG.autoCloseDelay
                     }
                 }
             });
