@@ -319,6 +319,114 @@
             100% { transform: rotate(360deg); }
         }
 
+        .prerequisites-section {
+            background: #f8faff;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .prerequisites-section h4 {
+            color: #4f46e5;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .check-text {
+            flex: 1;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .check-status {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .checklist-item.completed .check-icon {
+            color: #10b981;
+        }
+
+        .checklist-item.completed .check-text {
+            color: #065f46;
+        }
+
+        .checklist-item.completed .check-status {
+            color: #10b981;
+        }
+
+        .checklist-item.error .check-icon {
+            color: #ef4444;
+        }
+
+        .checklist-item.error .check-text {
+            color: #991b1b;
+        }
+
+        .checklist-item.error .check-status {
+            color: #ef4444;
+        }
+
+        .checklist-item.warning .check-icon {
+            color: #f59e0b;
+        }
+
+        .checklist-item.warning .check-text {
+            color: #92400e;
+        }
+
+        .checklist-item.warning .check-status {
+            color: #f59e0b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin: 12px 0;
+            border: 1px solid #e5e7eb;
+        }
+
         .embedded-mode {
             padding: 10px;
         }
@@ -392,22 +500,51 @@
                     <p>Connect your M2 card reader to start accepting payments</p>
                 </div>
 
+                <!-- Setup Prerequisites Checklist -->
+                <div class="prerequisites-section">
+                    <h4>📋 Setup Checklist</h4>
+                    <div class="checklist">
+                        <div class="checklist-item" id="browser-check">
+                            <span class="check-icon" id="browser-icon">⏳</span>
+                            <span class="check-text">Browser Support (Bluetooth & Location)</span>
+                            <span class="check-status" id="browser-status">Checking...</span>
+                        </div>
+                        <div class="checklist-item" id="location-check">
+                            <span class="check-icon" id="location-icon">⏳</span>
+                            <span class="check-text">Location Permission</span>
+                            <span class="check-status" id="location-status">Pending</span>
+                        </div>
+                        <div class="checklist-item" id="terminal-check">
+                            <span class="check-icon" id="terminal-icon">⏳</span>
+                            <span class="check-text">Stripe Terminal Ready</span>
+                            <span class="check-status" id="terminal-status">Initializing...</span>
+                        </div>
+                        <div class="checklist-item" id="reader-check">
+                            <span class="check-icon" id="reader-icon">⏳</span>
+                            <span class="check-text">M2 Reader Connected</span>
+                            <span class="check-status" id="reader-status">Not Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="check-status-btn" class="btn btn-secondary" onclick="checkPermissionsAndConnection()">
+                        🔍 Check All Prerequisites
+                    </button>
+                    <button id="location-btn" class="btn btn-secondary" onclick="requestLocationPermission()" style="display: none;">
+                        📍 Grant Location Permission
+                    </button>
+                    <button id="connect-btn" class="btn" onclick="connectReader()" disabled>
+                        🔌 Connect Reader
+                    </button>
+                </div>
+
                 <!-- Connection Status -->
                 <div class="connection-status">
                     <div>
                         <span class="status-indicator disconnected" id="status-indicator"></span>
                         <span id="connection-text">M2 Reader Disconnected</span>
-                    </div>
-                    <div>
-                        <button id="connect-btn" class="btn" onclick="connectReader()">
-                            Connect Reader
-                        </button>
-                        <button id="location-btn" class="btn btn-secondary" onclick="requestLocationPermission()" style="display: none;">
-                            Grant Location Permission
-                        </button>
-                        <button id="check-status-btn" class="btn btn-secondary" onclick="checkPermissionsAndConnection()">
-                            Check Status
-                        </button>
                     </div>
                 </div>
 
@@ -474,6 +611,59 @@
         let isConnected = false;
         let connectedReader = null;
         let readerData = null;
+        let prerequisitesState = {
+            browserSupport: false,
+            locationPermission: false,
+            terminalReady: false,
+            readerConnected: false
+        };
+
+        // Checklist Management Functions
+        function updateChecklistItem(itemId, status, icon, statusText) {
+            const item = document.getElementById(itemId);
+            const iconElement = document.getElementById(itemId.replace('-check', '-icon'));
+            const statusElement = document.getElementById(itemId.replace('-check', '-status'));
+            
+            if (!item || !iconElement || !statusElement) return;
+            
+            // Remove existing status classes
+            item.classList.remove('completed', 'error', 'warning');
+            
+            // Add new status class and update content
+            if (status !== 'pending') {
+                item.classList.add(status);
+            }
+            
+            iconElement.textContent = icon;
+            statusElement.textContent = statusText;
+        }
+
+        function updateConnectButtonState() {
+            const connectBtn = document.getElementById('connect-btn');
+            const locationBtn = document.getElementById('location-btn');
+            
+            if (!prerequisitesState.browserSupport) {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '❌ Browser Not Supported';
+                locationBtn.style.display = 'none';
+            } else if (!prerequisitesState.locationPermission) {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '📍 Grant Permission First';
+                locationBtn.style.display = 'inline-flex';
+            } else if (!prerequisitesState.terminalReady) {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '⏳ Terminal Initializing...';
+                locationBtn.style.display = 'none';
+            } else if (prerequisitesState.readerConnected) {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '✅ Reader Connected';
+                locationBtn.style.display = 'none';
+            } else {
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = '🔌 Connect Reader';
+                locationBtn.style.display = 'none';
+            }
+        }
 
         // PostMessage Integration
         function notifyParent(data) {
@@ -561,13 +751,24 @@
             });
         }
 
-        // Enhanced connection status with postMessage
+        // Enhanced connection status with postMessage and checklist update
         function updateConnectionStatus(status, text) {
             const indicator = document.getElementById('status-indicator');
             const connectionText = document.getElementById('connection-text');
             
             indicator.className = `status-indicator ${status}`;
             connectionText.textContent = text;
+            
+            // Update reader checklist item
+            if (status === 'connected') {
+                prerequisitesState.readerConnected = true;
+                updateChecklistItem('reader-check', 'completed', '✅', 'Connected');
+            } else {
+                prerequisitesState.readerConnected = false;
+                updateChecklistItem('reader-check', 'error', '❌', 'Not Connected');
+            }
+            
+            updateConnectButtonState();
             
             // Notify parent of connection status changes
             notifyParent({
@@ -676,11 +877,14 @@
         // Initialize Stripe Terminal
         async function initializeTerminal() {
             try {
+                updateChecklistItem('terminal-check', 'pending', '⏳', 'Initializing...');
+                
                 // Get connection token
                 let connectionToken = CONFIG.connectionToken;
                 
                 if (!connectionToken && CONFIG.connectionTokenWebhook) {
                     console.log('Fetching connection token from webhook...');
+                    updateChecklistItem('terminal-check', 'pending', '⏳', 'Getting Token...');
                     const tokenResponse = await callWebhook(CONFIG.connectionTokenWebhook, {
                         location_id: CONFIG.locationId,
                         business_id: CONFIG.businessId
@@ -693,6 +897,7 @@
                 }
 
                 console.log('Initializing Terminal with connection token...');
+                updateChecklistItem('terminal-check', 'pending', '⏳', 'Connecting...');
                 
                 terminal = StripeTerminal.create({
                     onFetchConnectionToken: () => Promise.resolve(connectionToken),
@@ -720,6 +925,10 @@
                 });
 
                 console.log('Terminal initialized successfully');
+                prerequisitesState.terminalReady = true;
+                updateChecklistItem('terminal-check', 'completed', '✅', 'Ready');
+                updateConnectButtonState();
+                
                 notifyParent({
                     type: 'TERMINAL_INITIALIZED',
                     data: { success: true }
@@ -727,6 +936,9 @@
                 
             } catch (error) {
                 console.error('Terminal initialization failed:', error);
+                prerequisitesState.terminalReady = false;
+                updateChecklistItem('terminal-check', 'error', '❌', 'Failed');
+                updateConnectButtonState();
                 showStatus(`❌ Terminal initialization failed: ${error.message}`, 'error');
                 notifyParent({
                     type: 'TERMINAL_INITIALIZATION_FAILED',
@@ -878,11 +1090,15 @@
         async function requestLocationPermission() {
             try {
                 showLoading('location-btn', 'Requesting...');
+                updateChecklistItem('location-check', 'pending', '⏳', 'Requesting...');
                 
                 await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
                             console.log('Location permission granted:', position);
+                            prerequisitesState.locationPermission = true;
+                            updateChecklistItem('location-check', 'completed', '✅', 'Granted');
+                            updateConnectButtonState();
                             showStatus('✅ Location permission granted! You can now connect your reader.', 'success');
                             document.getElementById('location-btn').style.display = 'none';
                             
@@ -900,6 +1116,9 @@
                         (error) => {
                             console.log('Location permission error:', error);
                             if (error.code === error.PERMISSION_DENIED) {
+                                prerequisitesState.locationPermission = false;
+                                updateChecklistItem('location-check', 'error', '❌', 'Denied');
+                                updateConnectButtonState();
                                 document.getElementById('location-permission-help').classList.remove('hidden');
                                 showStatus('❌ Location permission denied. Please see instructions below to enable it manually.', 'error');
                                 
@@ -916,6 +1135,9 @@
                                 reject(new Error('Location permission denied'));
                             } else {
                                 // Other errors (position unavailable, timeout) - still allow connection
+                                prerequisitesState.locationPermission = true;
+                                updateChecklistItem('location-check', 'warning', '⚠️', 'Unavailable');
+                                updateConnectButtonState();
                                 showStatus('⚠️ Location not available, but you can still try connecting.', 'warning');
                                 resolve();
                             }
@@ -943,26 +1165,42 @@
             let statusMessage = '';
             let statusType = 'info';
 
+            // Update browser support checklist
             if (!permissions.supported) {
+                prerequisitesState.browserSupport = false;
+                updateChecklistItem('browser-check', 'error', '❌', 'Not Supported');
                 statusMessage = '❌ Web Bluetooth not supported. Please use Chrome, Edge, or Brave browser.';
                 statusType = 'error';
                 document.getElementById('location-btn').style.display = 'none';
                 document.getElementById('connect-btn').disabled = true;
-            } else if (permissions.location) {
+            } else {
+                prerequisitesState.browserSupport = true;
+                updateChecklistItem('browser-check', 'completed', '✅', 'Supported');
+            }
+
+            // Update location permission checklist
+            if (permissions.location) {
+                prerequisitesState.locationPermission = true;
+                updateChecklistItem('location-check', 'completed', '✅', 'Granted');
                 statusMessage = '✅ All permissions ready. You can connect your reader.';
                 statusType = 'success';
                 document.getElementById('location-btn').style.display = 'none';
             } else if (permissions.locationState === 'denied') {
+                prerequisitesState.locationPermission = false;
+                updateChecklistItem('location-check', 'error', '❌', 'Denied');
                 statusMessage = '🚫 Location permission was denied. Click "Grant Location Permission" below or see manual instructions.';
                 statusType = 'error';
                 document.getElementById('location-permission-help').classList.remove('hidden');
                 document.getElementById('location-btn').style.display = 'inline-flex';
             } else {
+                prerequisitesState.locationPermission = false;
+                updateChecklistItem('location-check', 'warning', '⚠️', 'Required');
                 statusMessage = '⚠️ Location permission will be requested when you connect. You can also grant it manually below.';
                 statusType = 'warning';
                 document.getElementById('location-btn').style.display = 'inline-flex';
             }
 
+            updateConnectButtonState();
             showStatus(statusMessage, statusType);
             
             // Notify parent of permission status
@@ -999,7 +1237,7 @@
         }
 
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Reader Connection Page initialized');
             
             // Notify parent that page is ready
@@ -1014,7 +1252,7 @@
                 }
             });
             
-            // Check required parameters
+            // Check required parameters first
             const hasConnectionToken = CONFIG.connectionToken || CONFIG.connectionTokenWebhook;
             
             if (!CONFIG.publishableKey || !CONFIG.locationId || !CONFIG.businessId || 
@@ -1049,11 +1287,36 @@
                 embeddedMode: CONFIG.embeddedMode
             });
 
-            // Initialize Terminal
-            initializeTerminal().catch(console.error);
-
-            // Check permissions and show status
-            showPermissionStatus();
+            // Improved initialization flow: Check all prerequisites automatically
+            try {
+                // Step 1: Check browser support and permissions
+                await showPermissionStatus();
+                
+                // Step 2: Initialize Terminal (only if browser is supported)
+                if (prerequisitesState.browserSupport) {
+                    await initializeTerminal();
+                }
+                
+                // Step 3: Update overall status
+                updateConnectButtonState();
+                
+                // Step 4: Show helpful message based on state
+                if (prerequisitesState.browserSupport && prerequisitesState.terminalReady) {
+                    if (prerequisitesState.locationPermission) {
+                        showStatus('🎉 All prerequisites complete! Click "Connect Reader" to proceed.', 'success');
+                    } else {
+                        showStatus('📍 Grant location permission to enable reader connection.', 'info');
+                    }
+                } else if (!prerequisitesState.browserSupport) {
+                    showStatus('❌ Please use a supported browser (Chrome, Edge, or Brave) for Bluetooth functionality.', 'error');
+                } else {
+                    showStatus('⚠️ Terminal initialization failed. Please refresh and try again.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showStatus(`❌ Initialization failed: ${error.message}`, 'error');
+            }
         });
 
         // Error handling for unhandled promise rejections
