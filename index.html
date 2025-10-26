@@ -152,6 +152,48 @@
             background: #4b5563;
         }
 
+        /* Apple Device Warning Styles */
+        .apple-warning {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .apple-warning h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .apple-warning p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .apple-warning .btn-bluefy {
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .apple-warning .btn-bluefy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
         .status {
             padding: 12px 14px;
             border-radius: 8px;
@@ -224,1031 +266,706 @@
             background: #ef4444;
         }
 
-        .reader-info {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+        .reader-details {
             padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
             margin: 12px 0;
+            border: 1px solid #e5e7eb;
         }
 
-        .reader-info h4 {
+        .reader-details h4 {
             margin-bottom: 10px;
-            color: #374151;
+            color: #4f46e5;
         }
 
-        .reader-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .reader-info-item {
+        .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .reader-info-label {
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
             font-weight: 500;
             color: #6b7280;
         }
 
-        .reader-info-value {
-            color: #374151;
-            word-break: break-all;
+        .detail-value {
+            font-weight: 600;
+            color: #111827;
         }
 
-        .completion-message {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .completion-message h3 {
-            margin-bottom: 8px;
-            font-size: 1.3rem;
-        }
-
-        .completion-message p {
-            opacity: 0.9;
-            line-height: 1.4;
-        }
-
-        .auto-close-countdown {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .auto-close-countdown p {
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .auto-close-countdown #countdown {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #fef3c7;
-        }
-
-        #cancel-close-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        #cancel-close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .instructions {
-            background: #f8faff;
-            border: 1px solid #e0e7ff;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 12px 0;
-        }
-
-        .instructions h4 {
-            color: #4f46e5;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .instructions ol, .instructions ul {
-            margin-left: 20px;
-            color: #4b5563;
-        }
-
-        .instructions li {
-            margin: 5px 0;
-            line-height: 1.4;
-        }
-
-        .loading-spinner {
+        .loading {
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
+            border: 2px solid #ffffff;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+            margin-left: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
         }
 
-        .prerequisites-section {
-            background: #f8faff;
-            border: 1px solid #e0e7ff;
+        .help-section {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
             border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
+            padding: 15px;
+            margin: 15px 0;
         }
 
-        .prerequisites-section h4 {
+        .help-section h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .help-section ol {
+            margin-left: 20px;
+            color: #78350f;
+        }
+
+        .help-section li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .prerequisites-checklist {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .prerequisites-checklist h4 {
             color: #4f46e5;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .checklist {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 1rem;
         }
 
         .checklist-item {
             display: flex;
             align-items: center;
-            gap: 12px;
             padding: 8px 0;
-            border-bottom: 1px solid #e0e7ff;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .checklist-item:last-child {
             border-bottom: none;
         }
 
-        .check-icon {
+        .checklist-icon {
             font-size: 1.2rem;
-            width: 24px;
-            text-align: center;
-            flex-shrink: 0;
+            margin-right: 10px;
+            min-width: 24px;
         }
 
-        .check-text {
+        .checklist-label {
             flex: 1;
-            font-weight: 500;
             color: #374151;
         }
 
-        .check-status {
-            font-size: 0.875rem;
-            color: #6b7280;
+        .checklist-status {
             font-weight: 500;
-            min-width: 100px;
-            text-align: right;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
 
-        .checklist-item.completed .check-icon {
-            color: #10b981;
-        }
-
-        .checklist-item.completed .check-text {
+        .checklist-status.completed {
+            background: #d1fae5;
             color: #065f46;
         }
 
-        .checklist-item.completed .check-status {
-            color: #10b981;
-        }
-
-        .checklist-item.error .check-icon {
-            color: #ef4444;
-        }
-
-        .checklist-item.error .check-text {
-            color: #991b1b;
-        }
-
-        .checklist-item.error .check-status {
-            color: #ef4444;
-        }
-
-        .checklist-item.warning .check-icon {
-            color: #f59e0b;
-        }
-
-        .checklist-item.warning .check-text {
+        .checklist-status.pending {
+            background: #fef3c7;
             color: #92400e;
         }
 
-        .checklist-item.warning .check-status {
-            color: #f59e0b;
+        .checklist-status.error {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-            justify-content: center;
+        .checklist-status.warning {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 8px;
-            margin: 12px 0;
-            border: 1px solid #e5e7eb;
-        }
-
-        .embedded-mode {
-            padding: 10px;
-        }
-
-        .embedded-mode .header h1 {
-            font-size: 1.4rem;
-        }
-
-        .embedded-mode .card {
-            box-shadow: none;
-            border: 1px solid #e5e7eb;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
+        @media (max-width: 640px) {
             .header h1 {
                 font-size: 1.5rem;
             }
-            
-            .step-header {
-                flex-direction: column;
-                align-items: flex-start;
+
+            .step-title {
+                font-size: 1.1rem;
             }
-            
-            .step-number {
-                margin-right: 0;
-                margin-bottom: 8px;
+
+            .btn {
+                width: 100%;
+                margin: 8px 0;
             }
-            
+
             .connection-status {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            
-            .reader-info-grid {
-                grid-template-columns: 1fr;
+
+            .connection-status > div:last-child {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Configuration Check -->
-        <div id="params-check" class="card hidden">
-            <div class="header">
-                <h1>⚠️ Configuration Required</h1>
-                <p>Missing required parameters for reader connection</p>
-            </div>
-            <div class="status error">
-                <strong>Required URL Parameters:</strong><br>
-                • <code>publishableKey</code> - Your Stripe publishable key<br>
-                • <code>locationId</code> - Stripe Terminal location ID<br>
-                • <code>businessId</code> - Your business identifier<br>
-                • <code>connectionTokenWebhook</code> - Webhook URL for connection tokens<br>
-                • <code>readerStorageWebhook</code> - Webhook URL for reader data storage<br><br>
-                
-                <strong>Example:</strong><br>
-                <code>page.html?publishableKey=pk_live_xxx&locationId=tml_xxx&businessId=123&connectionTokenWebhook=webhook1&readerStorageWebhook=webhook2</code>
-            </div>
+        <!-- Apple Device Warning (Hidden by default, shown if Apple device detected) -->
+        <div id="apple-warning" class="apple-warning hidden">
+            <h3>🍎 Apple Device Detected</h3>
+            <p>Safari doesn't support Web Bluetooth for M2 readers. To connect your Stripe M2 reader on iOS/iPadOS/macOS, please use the <strong>Bluefy</strong> browser app.</p>
+            <a href="https://apps.apple.com/app/bluefy-web-ble-browser/id1492822055" class="btn-bluefy" target="_blank" rel="noopener noreferrer">
+                📱 Get Bluefy from App Store
+            </a>
         </div>
 
-        <!-- Main Setup -->
-        <div class="setup-step active">
-            <div class="card">
-                <div class="header">
-                    <h1>🔗 Connect Your Stripe Reader</h1>
-                    <p>Connect your M2 card reader to start accepting payments</p>
+        <div class="card">
+            <div class="header">
+                <h1>🔌 Connect Your Stripe Reader</h1>
+                <p>Follow the steps below to connect your Stripe M2 Reader via Bluetooth</p>
+            </div>
+
+            <!-- Missing parameters warning -->
+            <div id="params-check" class="status error hidden">
+                ❌ <strong>Configuration Error:</strong> Missing required URL parameters. Please provide publishableKey, locationId, businessId, connectionToken (or connectionTokenWebhook), and readerStorageWebhook.
+            </div>
+
+            <!-- Step 1: Prerequisites Check -->
+            <div class="setup-step active">
+                <div class="step-header">
+                    <div class="step-number active">1</div>
+                    <div class="step-title">Prerequisites Check</div>
                 </div>
 
-                <!-- Setup Prerequisites Checklist -->
-                <div class="prerequisites-section">
-                    <h4>📋 Setup Checklist</h4>
-                    <div class="checklist">
-                        <div class="checklist-item" id="browser-check">
-                            <span class="check-icon" id="browser-icon">⏳</span>
-                            <span class="check-text">Browser Support (Bluetooth & Location)</span>
-                            <span class="check-status" id="browser-status">Checking...</span>
-                        </div>
-                        <div class="checklist-item" id="location-check">
-                            <span class="check-icon" id="location-icon">⏳</span>
-                            <span class="check-text">Location Permission</span>
-                            <span class="check-status" id="location-status">Pending</span>
-                        </div>
-                        <div class="checklist-item" id="terminal-check">
-                            <span class="check-icon" id="terminal-icon">⏳</span>
-                            <span class="check-text">Stripe Terminal Ready</span>
-                            <span class="check-status" id="terminal-status">Initializing...</span>
-                        </div>
-                        <div class="checklist-item" id="reader-check">
-                            <span class="check-icon" id="reader-icon">⏳</span>
-                            <span class="check-text">M2 Reader Connected</span>
-                            <span class="check-status" id="reader-status">Not Connected</span>
-                        </div>
+                <div class="prerequisites-checklist">
+                    <h4>System Requirements</h4>
+                    <div class="checklist-item" id="browser-check">
+                        <span class="checklist-icon">⏳</span>
+                        <span class="checklist-label">Browser Compatibility</span>
+                        <span class="checklist-status pending">Checking...</span>
+                    </div>
+                    <div class="checklist-item" id="location-check">
+                        <span class="checklist-icon">⏳</span>
+                        <span class="checklist-label">Location Permission</span>
+                        <span class="checklist-status pending">Checking...</span>
+                    </div>
+                    <div class="checklist-item" id="terminal-check">
+                        <span class="checklist-icon">⏳</span>
+                        <span class="checklist-label">Terminal SDK</span>
+                        <span class="checklist-status pending">Initializing...</span>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button id="check-status-btn" class="btn btn-secondary" onclick="checkPermissionsAndConnection()">
-                        🔍 Check All Prerequisites
-                    </button>
-                    <button id="location-btn" class="btn btn-secondary" onclick="requestLocationPermission()" style="display: none;">
-                        📍 Grant Location Permission
-                    </button>
-                    <button id="connect-btn" class="btn" onclick="connectReader()" disabled>
-                        🔌 Connect Reader
-                    </button>
+                <div id="status-message" class="status info">
+                    🔄 Checking system requirements...
                 </div>
 
-                <!-- Connection Status -->
+                <button id="location-btn" class="btn" onclick="requestLocationPermission()" style="display: none;">
+                    Grant Location Permission
+                </button>
+
+                <!-- Location Permission Help Section -->
+                <div id="location-permission-help" class="help-section hidden">
+                    <h4>📍 How to Enable Location Permission Manually:</h4>
+                    <ol>
+                        <li>Click the lock/info icon 🔒 in your browser's address bar</li>
+                        <li>Find "Location" in the permissions list</li>
+                        <li>Change it from "Blocked" to "Allow"</li>
+                        <li>Refresh this page</li>
+                    </ol>
+                    <p style="margin-top: 10px;"><strong>Why is location needed?</strong> Web Bluetooth API requires location permission to scan for nearby Bluetooth devices.</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Connect Reader -->
+            <div class="setup-step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Connect M2 Reader</div>
+                </div>
+
                 <div class="connection-status">
-                    <div>
-                        <span class="status-indicator disconnected" id="status-indicator"></span>
+                    <div style="display: flex; align-items: center;">
+                        <span class="status-indicator disconnected" id="connection-indicator"></span>
                         <span id="connection-text">M2 Reader Disconnected</span>
                     </div>
+                    <div>
+                        <button id="connect-btn" class="btn" onclick="connectReader()" disabled>
+                            Connect Reader
+                        </button>
+                        <button id="disconnect-btn" class="btn btn-secondary hidden" onclick="disconnectReader()">
+                            Disconnect
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Status Messages -->
-                <div id="status-message"></div>
+                <div id="reader-details" class="reader-details hidden">
+                    <h4>Reader Information</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Serial Number:</span>
+                        <span class="detail-value" id="serial-number">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Battery Level:</span>
+                        <span class="detail-value" id="battery-level">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Device Type:</span>
+                        <span class="detail-value" id="device-type">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value" id="reader-status">-</span>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Reader Information -->
-                <div id="reader-info" class="reader-info hidden">
-                    <h4>📱 Connected Reader Details</h4>
-                    <div class="reader-info-grid" id="reader-details"></div>
+            <!-- Step 3: Test Connection -->
+            <div class="setup-step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Verify Connection</div>
                 </div>
 
-                <!-- Instructions -->
-                <div id="bluetooth-instructions" class="instructions hidden">
-                    <h4>🔵 Bluetooth Connection Tips</h4>
-                    <ul>
-                        <li>Make sure your M2 reader is turned on and in range</li>
-                        <li>Ensure Bluetooth is enabled on this device</li>
-                        <li>Try moving closer to the reader (within 30 feet)</li>
-                        <li>If connection fails, restart your reader and try again</li>
-                    </ul>
-                </div>
+                <p style="margin-bottom: 15px; color: #6b7280;">
+                    Once connected, verify that your reader is working properly.
+                </p>
 
-                <div id="location-permission-help" class="instructions hidden">
-                    <h4>📍 Manual Location Permission Setup</h4>
-                    <ol>
-                        <li>Click the location/lock icon in your browser's address bar</li>
-                        <li>Set "Location" to "Allow" or "Ask"</li>
-                        <li>Refresh this page and try connecting again</li>
-                    </ol>
-                    <p><strong>Note:</strong> Location permission is required by browsers for Bluetooth device discovery.</p>
-                </div>
-
-                <!-- Completion Message -->
-                <div id="completion-message" class="completion-message hidden">
-                    <h3>🎉 Setup Complete!</h3>
-                    <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
-                </div>
+                <button id="check-btn" class="btn" onclick="checkPermissionsAndConnection()">
+                    Check Status
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuration from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const CONFIG = {
-            publishableKey: urlParams.get('publishableKey') || 'pk_live_your_key_here',
-            locationId: urlParams.get('locationId') || 'tml_your_location_id',
-            businessId: urlParams.get('businessId') || 'your_business_id',
-            connectionToken: urlParams.get('connectionToken'),
-            connectionTokenWebhook: urlParams.get('connectionTokenWebhook') || 'your_webhook_url',
-            readerStorageWebhook: urlParams.get('readerStorageWebhook') || 'your_storage_webhook',
-            embeddedMode: urlParams.get('embedded') === 'true',
-            parentOrigin: urlParams.get('parentOrigin') || '*',
-            autoClose: urlParams.get('autoClose') !== 'false', // Default true, set to false to disable
-            autoCloseDelay: parseInt(urlParams.get('autoCloseDelay')) || 5 // Default 5 seconds
-        };
-
-        // Apply embedded mode styling if requested
-        if (CONFIG.embeddedMode) {
-            document.body.classList.add('embedded-mode');
+        // ============================================
+        // APPLE DEVICE DETECTION
+        // ============================================
+        
+        /**
+         * Detects if the user is on an iOS device (iPhone, iPad, iPod)
+         */
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         }
 
-        // Global variables
+        /**
+         * Detects if the user is on macOS
+         */
+        function isMacOS() {
+            return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        }
+
+        /**
+         * Detects if the user is on any Apple device
+         */
+        function isAppleDevice() {
+            return isIOS() || isMacOS();
+        }
+
+        /**
+         * Shows warning for Apple users to use Bluefy browser
+         */
+        function showAppleDeviceWarning() {
+            const warningElement = document.getElementById('apple-warning');
+            if (warningElement) {
+                warningElement.classList.remove('hidden');
+                
+                // Optionally log device info for debugging
+                console.log('Apple device detected:', {
+                    iOS: isIOS(),
+                    macOS: isMacOS(),
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform
+                });
+                
+                // Notify parent if in embedded mode
+                notifyParent({
+                    type: 'APPLE_DEVICE_DETECTED',
+                    data: {
+                        iOS: isIOS(),
+                        macOS: isMacOS(),
+                        message: 'User should use Bluefy browser'
+                    }
+                });
+            }
+        }
+
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const CONFIG = {
+            publishableKey: new URLSearchParams(window.location.search).get('publishableKey') || '',
+            locationId: new URLSearchParams(window.location.search).get('locationId') || '',
+            businessId: new URLSearchParams(window.location.search).get('businessId') || '',
+            connectionToken: new URLSearchParams(window.location.search).get('connectionToken') || '',
+            connectionTokenWebhook: new URLSearchParams(window.location.search).get('connectionTokenWebhook') || '',
+            readerStorageWebhook: new URLSearchParams(window.location.search).get('readerStorageWebhook') || '',
+            embeddedMode: new URLSearchParams(window.location.search).get('embedded') === 'true',
+            autoClose: new URLSearchParams(window.location.search).get('autoClose') === 'true',
+            autoCloseDelay: parseInt(new URLSearchParams(window.location.search).get('autoCloseDelay')) || 2000
+        };
+
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
         let terminal = null;
+        let discoverResult = null;
         let isConnected = false;
         let connectedReader = null;
-        let readerData = null;
-        let prerequisitesState = {
+        let connectionTokenUsed = false;
+
+        const prerequisitesState = {
             browserSupport: false,
             locationPermission: false,
-            terminalReady: false,
-            readerConnected: false
+            terminalReady: false
         };
 
-        // Checklist Management Functions
-        function updateChecklistItem(itemId, status, icon, statusText) {
-            const item = document.getElementById(itemId);
-            const iconElement = document.getElementById(itemId.replace('-check', '-icon'));
-            const statusElement = document.getElementById(itemId.replace('-check', '-status'));
-            
-            if (!item || !iconElement || !statusElement) return;
-            
-            // Remove existing status classes
-            item.classList.remove('completed', 'error', 'warning');
-            
-            // Add new status class and update content
-            if (status !== 'pending') {
-                item.classList.add(status);
+        // ============================================
+        // HELPER FUNCTIONS
+        // ============================================
+        
+        // Notify parent window (for embedded mode)
+        function notifyParent(message) {
+            if (CONFIG.embeddedMode && window.parent !== window) {
+                window.parent.postMessage(message, '*');
             }
-            
-            iconElement.textContent = icon;
-            statusElement.textContent = statusText;
         }
 
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status-message');
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.className = `status ${type}`;
+            }
+        }
+
+        // Update checklist item
+        function updateChecklistItem(itemId, statusClass, icon, statusText) {
+            const item = document.getElementById(itemId);
+            if (!item) return;
+
+            const iconEl = item.querySelector('.checklist-icon');
+            const statusEl = item.querySelector('.checklist-status');
+
+            if (iconEl) iconEl.textContent = icon;
+            if (statusEl) {
+                statusEl.textContent = statusText;
+                statusEl.className = `checklist-status ${statusClass}`;
+            }
+        }
+
+        // Update connection status UI
+        function updateConnectionStatus(status, text) {
+            const indicator = document.getElementById('connection-indicator');
+            const connectionText = document.getElementById('connection-text');
+            const connectBtn = document.getElementById('connect-btn');
+            const disconnectBtn = document.getElementById('disconnect-btn');
+            const readerDetails = document.getElementById('reader-details');
+
+            if (status === 'connected') {
+                indicator.className = 'status-indicator connected';
+                connectionText.textContent = text;
+                connectBtn.classList.add('hidden');
+                disconnectBtn.classList.remove('hidden');
+                if (readerDetails) readerDetails.classList.remove('hidden');
+            } else {
+                indicator.className = 'status-indicator disconnected';
+                connectionText.textContent = text;
+                connectBtn.classList.remove('hidden');
+                disconnectBtn.classList.add('hidden');
+                if (readerDetails) readerDetails.classList.add('hidden');
+            }
+        }
+
+        // Update reader details in UI
+        function updateReaderDetails(reader) {
+            document.getElementById('serial-number').textContent = reader.serial_number || 'Unknown';
+            document.getElementById('battery-level').textContent = reader.battery_level ? `${reader.battery_level}%` : 'Unknown';
+            document.getElementById('device-type').textContent = reader.device_type || 'Unknown';
+            document.getElementById('reader-status').textContent = reader.status || 'Unknown';
+        }
+
+        // Show/hide loading state on buttons
+        function showLoading(buttonId, originalText) {
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `${originalText}<span class="loading"></span>`;
+            }
+        }
+
+        function hideLoading(buttonId, text) {
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = text;
+            }
+        }
+
+        // Update connect button state based on prerequisites
         function updateConnectButtonState() {
             const connectBtn = document.getElementById('connect-btn');
-            const locationBtn = document.getElementById('location-btn');
-            
+            if (!connectBtn) return;
+
+            const canConnect = prerequisitesState.browserSupport && 
+                             prerequisitesState.terminalReady;
+
+            connectBtn.disabled = !canConnect;
+
             if (!prerequisitesState.browserSupport) {
-                connectBtn.disabled = true;
-                connectBtn.innerHTML = '❌ Browser Not Supported';
-                locationBtn.style.display = 'none';
-            } else if (!prerequisitesState.locationPermission) {
-                connectBtn.disabled = true;
-                connectBtn.innerHTML = '📍 Grant Permission First';
-                locationBtn.style.display = 'inline-flex';
+                connectBtn.title = 'Browser not supported. Please use Chrome, Edge, or Brave.';
             } else if (!prerequisitesState.terminalReady) {
-                connectBtn.disabled = true;
-                connectBtn.innerHTML = '⏳ Terminal Initializing...';
-                locationBtn.style.display = 'none';
-            } else if (prerequisitesState.readerConnected) {
-                connectBtn.disabled = true;
-                connectBtn.innerHTML = '✅ Reader Connected';
-                locationBtn.style.display = 'none';
+                connectBtn.title = 'Terminal not initialized. Please refresh the page.';
             } else {
-                connectBtn.disabled = false;
-                connectBtn.innerHTML = '🔌 Connect Reader';
-                locationBtn.style.display = 'none';
+                connectBtn.title = 'Click to connect your M2 reader';
             }
         }
 
-        // PostMessage Integration
-        function notifyParent(data) {
-            // Only send messages if we're in an iframe or embedded context
-            if (window.parent !== window) {
+        // ============================================
+        // PERMISSION CHECKS
+        // ============================================
+        
+        async function checkPermissions() {
+            const permissions = {
+                supported: false,
+                location: false,
+                locationState: 'prompt'
+            };
+
+            // Check browser support
+            if (navigator.bluetooth) {
+                permissions.supported = true;
+            }
+
+            // Check location permission
+            if (navigator.permissions) {
                 try {
-                    window.parent.postMessage({
-                        source: 'stripe-reader-connect',
-                        timestamp: new Date().toISOString(),
-                        ...data
-                    }, CONFIG.parentOrigin);
+                    const result = await navigator.permissions.query({ name: 'geolocation' });
+                    permissions.locationState = result.state;
+                    permissions.location = result.state === 'granted';
                 } catch (error) {
-                    console.warn('Failed to send message to parent:', error);
+                    console.warn('Could not check location permission:', error);
                 }
             }
+
+            return permissions;
         }
 
-        // Listen for messages from parent window
-        window.addEventListener('message', function(event) {
-            // Validate origin if specified
-            if (CONFIG.parentOrigin !== '*' && event.origin !== CONFIG.parentOrigin) {
-                return;
-            }
-
-            const { type, data } = event.data;
+        // ============================================
+        // STRIPE TERMINAL SETUP
+        // ============================================
+        
+        // Fetch connection token
+        async function fetchConnectionToken() {
+            console.log('Fetching connection token...');
             
-            switch (type) {
-                case 'CONNECT_READER':
-                    connectReader();
-                    break;
-                case 'CHECK_STATUS':
-                    checkPermissionsAndConnection();
-                    break;
-                case 'REQUEST_PERMISSIONS':
-                    requestLocationPermission();
-                    break;
-                case 'REQUEST_READER_INFO':
-                    if (isConnected && connectedReader) {
-                        notifyParent({
-                            type: 'READER_INFO',
-                            data: {
-                                connected: isConnected,
-                                reader: connectedReader,
-                                readerData: readerData
-                            }
-                        });
-                    } else {
-                        notifyParent({
-                            type: 'READER_INFO',
-                            data: { connected: false }
-                        });
-                    }
-                    break;
-                case 'DISCONNECT_READER':
-                    if (terminal && isConnected) {
-                        // Cancel auto-close if active
-                        if (countdownInterval) {
-                            cancelAutoClose();
-                        }
-                        
-                        terminal.disconnectReader().then(() => {
-                            isConnected = false;
-                            connectedReader = null;
-                            readerData = null;
-                            updateConnectionStatus('disconnected', 'M2 Reader Disconnected');
-                            document.getElementById('reader-info').classList.add('hidden');
-                            document.getElementById('completion-message').classList.add('hidden');
-                            document.getElementById('connect-btn').disabled = false;
-                            document.getElementById('connect-btn').innerHTML = 'Connect Reader';
-                            showStatus('🔌 Reader disconnected successfully.', 'info');
-                        });
-                    }
-                    break;
-                case 'TRIGGER_AUTO_CLOSE':
-                    if (isConnected && CONFIG.autoClose) {
-                        showCompletionMessage(); // This will start the countdown
-                    }
-                    break;
-                case 'CANCEL_AUTO_CLOSE':
-                    cancelAutoClose();
-                    break;
-                case 'CLOSE_WINDOW':
-                    closeWindow();
-                    break;
-            }
-        });
-
-        // Enhanced status reporting with postMessage
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status-message');
-            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
-            
-            // Notify parent of status changes
-            notifyParent({
-                type: 'STATUS_UPDATE',
-                data: {
-                    message: message,
-                    type: type,
-                    timestamp: new Date().toISOString()
-                }
-            });
-        }
-
-        // Enhanced connection status with postMessage and checklist update
-        function updateConnectionStatus(status, text) {
-            const indicator = document.getElementById('status-indicator');
-            const connectionText = document.getElementById('connection-text');
-            
-            indicator.className = `status-indicator ${status}`;
-            connectionText.textContent = text;
-            
-            // Update reader checklist item
-            if (status === 'connected') {
-                prerequisitesState.readerConnected = true;
-                updateChecklistItem('reader-check', 'completed', '✅', 'Connected');
-            } else {
-                prerequisitesState.readerConnected = false;
-                updateChecklistItem('reader-check', 'error', '❌', 'Not Connected');
+            // If a pre-generated token is provided, use it once
+            if (CONFIG.connectionToken && !connectionTokenUsed) {
+                console.log('Using pre-generated connection token');
+                connectionTokenUsed = true;
+                return CONFIG.connectionToken;
             }
             
-            updateConnectButtonState();
-            
-            // Notify parent of connection status changes
-            notifyParent({
-                type: 'CONNECTION_STATUS',
-                data: {
-                    status: status,
-                    text: text,
-                    connected: status === 'connected',
-                    reader: connectedReader
-                }
-            });
-        }
-
-        // Enhanced completion with postMessage and auto-close
-        function showCompletionMessage() {
-            document.getElementById('completion-message').classList.remove('hidden');
-            
-            // Check if auto-close is enabled
-            if (CONFIG.autoClose) {
-                // Add countdown element to completion message
-                const completionDiv = document.getElementById('completion-message');
-                completionDiv.innerHTML = `
-                    <h3>🎉 Setup Complete!</h3>
-                    <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
-                    <div class="auto-close-countdown">
-                        <p>🕐 Closing automatically in <span id="countdown">${CONFIG.autoCloseDelay}</span> seconds...</p>
-                        <button id="cancel-close-btn" class="btn btn-secondary" onclick="cancelAutoClose()">
-                            Stay Open
-                        </button>
-                    </div>
-                `;
-                
-                // Start countdown timer
-                startAutoCloseCountdown();
-            } else {
-                // Show completion message without auto-close
-                const completionDiv = document.getElementById('completion-message');
-                completionDiv.innerHTML = `
-                    <h3>🎉 Setup Complete!</h3>
-                    <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
-                `;
-            }
-            
-            // Notify parent of successful completion
-            notifyParent({
-                type: 'SETUP_COMPLETE',
-                data: {
-                    reader: connectedReader,
-                    readerData: readerData,
-                    success: true,
-                    autoClose: CONFIG.autoClose,
-                    autoCloseIn: CONFIG.autoClose ? CONFIG.autoCloseDelay : null
-                }
-            });
-        }
-
-        // Auto-close countdown functionality
-        let autoCloseTimer = null;
-        let countdownInterval = null;
-
-        function startAutoCloseCountdown() {
-            let timeLeft = CONFIG.autoCloseDelay;
-            const countdownElement = document.getElementById('countdown');
-            
-            // Update countdown display every second
-            countdownInterval = setInterval(() => {
-                timeLeft--;
-                if (countdownElement) {
-                    countdownElement.textContent = timeLeft;
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    closeWindow();
-                }
-                
-                // Notify parent of countdown progress
-                notifyParent({
-                    type: 'AUTO_CLOSE_COUNTDOWN',
-                    data: {
-                        timeLeft: timeLeft,
-                        willClose: timeLeft <= 0
-                    }
-                });
-            }, 1000);
-        }
-
-        function cancelAutoClose() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                countdownInterval = null;
-            }
-            
-            // Update completion message
-            const completionDiv = document.getElementById('completion-message');
-            completionDiv.innerHTML = `
-                <h3>🎉 Setup Complete!</h3>
-                <p>Your Stripe reader is successfully connected and ready to accept payments.</p>
-                <p style="opacity: 0.8; margin-top: 10px;">Auto-close cancelled. Window will remain open.</p>
-            `;
-            
-            // Notify parent that auto-close was cancelled
-            notifyParent({
-                type: 'AUTO_CLOSE_CANCELLED',
-                data: {
-                    message: 'User cancelled auto-close',
-                    timestamp: new Date().toISOString()
-                }
-            });
-        }
-
-        function closeWindow() {
-            // Notify parent before closing
-            notifyParent({
-                type: 'WINDOW_CLOSING',
-                data: {
-                    reason: 'auto_close_after_connection',
-                    timestamp: new Date().toISOString()
-                }
-            });
-            
-            // Try different methods to close the window
-            try {
-                // For popup windows
-                if (window.opener) {
-                    window.close();
-                    return;
-                }
-                
-                // For iframes - ask parent to close/hide the iframe
-                if (window.parent !== window) {
-                    notifyParent({
-                        type: 'REQUEST_CLOSE_IFRAME',
-                        data: {
-                            message: 'Please close or hide the iframe',
-                            timestamp: new Date().toISOString()
-                        }
+            // Otherwise, call the webhook to generate a new token
+            if (CONFIG.connectionTokenWebhook) {
+                console.log('Calling connection token webhook...');
+                try {
+                    const response = await fetch(CONFIG.connectionTokenWebhook, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            location: CONFIG.locationId
+                        })
                     });
-                    return;
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Webhook failed (${response.status}): ${errorText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Connection token received from webhook');
+                    return data.secret;
+                } catch (error) {
+                    console.error('Error fetching connection token from webhook:', error);
+                    throw error;
                 }
-                
-                // For standalone windows
-                window.close();
-                
-                // If window.close() doesn't work (e.g., not opened by script)
-                // redirect to a success page or show a message
-                setTimeout(() => {
-                    document.body.innerHTML = `
-                        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                            <div>
-                                <h2 style="color: #10b981; margin-bottom: 10px;">✅ Connection Complete!</h2>
-                                <p style="color: #6b7280;">You can safely close this window.</p>
-                            </div>
-                        </div>
-                    `;
-                }, 100);
-                
-            } catch (error) {
-                console.error('Error closing window:', error);
-                // Show message if closing fails
-                document.body.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                        <div>
-                            <h2 style="color: #10b981; margin-bottom: 10px;">✅ Connection Complete!</h2>
-                            <p style="color: #6b7280;">You can safely close this window.</p>
-                        </div>
-                    </div>
-                `;
             }
-        }
-
-        // Generic webhook caller
-        async function callWebhook(url, data) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Webhook call failed: ${response.status} ${response.statusText}`);
-                }
-
-                return await response.json();
-            } catch (error) {
-                console.error('Webhook call failed:', error);
-                throw error;
-            }
-        }
-
-        // Show/hide loading state
-        function showLoading(buttonId, loadingText = 'Loading...') {
-            const button = document.getElementById(buttonId);
-            if (button) {
-                button.innerHTML = `<span class="loading-spinner"></span>${loadingText}`;
-                button.disabled = true;
-            }
-        }
-
-        function hideLoading(buttonId, originalText) {
-            const button = document.getElementById(buttonId);
-            if (button) {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }
-        }
-
-        // Update reader information display
-        function updateReaderInfo(reader) {
-            const readerInfo = document.getElementById('reader-info');
-            const readerDetails = document.getElementById('reader-details');
             
-            if (reader) {
-                readerDetails.innerHTML = `
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">Model:</span>
-                        <span class="reader-info-value">${reader.device_type || 'M2'}</span>
-                    </div>
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">Serial Number:</span>
-                        <span class="reader-info-value">${reader.serial_number || 'Unknown'}</span>
-                    </div>
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">Battery Level:</span>
-                        <span class="reader-info-value">${reader.battery_level || 'Unknown'}%</span>
-                    </div>
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">Software Version:</span>
-                        <span class="reader-info-value">${reader.device_sw_version || 'Unknown'}</span>
-                    </div>
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">IP Address:</span>
-                        <span class="reader-info-value">${reader.ip_address || 'Unknown'}</span>
-                    </div>
-                    <div class="reader-info-item">
-                        <span class="reader-info-label">Location ID:</span>
-                        <span class="reader-info-value">${reader.location || CONFIG.locationId}</span>
-                    </div>
-                `;
-                readerInfo.classList.remove('hidden');
-            } else {
-                readerInfo.classList.add('hidden');
-            }
+            throw new Error('No connection token or webhook URL provided');
         }
 
         // Initialize Stripe Terminal
         async function initializeTerminal() {
+            console.log('Initializing Stripe Terminal...');
+            
             try {
                 updateChecklistItem('terminal-check', 'pending', '⏳', 'Initializing...');
                 
-                // Get connection token
-                let connectionToken = CONFIG.connectionToken;
-                
-                if (!connectionToken && CONFIG.connectionTokenWebhook) {
-                    console.log('Fetching connection token from webhook...');
-                    updateChecklistItem('terminal-check', 'pending', '⏳', 'Getting Token...');
-                    const tokenResponse = await callWebhook(CONFIG.connectionTokenWebhook, {
-                        location_id: CONFIG.locationId,
-                        business_id: CONFIG.businessId
-                    });
-                    connectionToken = tokenResponse.secret || tokenResponse.connection_token || tokenResponse.token;
-                }
-
-                if (!connectionToken) {
-                    throw new Error('No connection token available');
-                }
-
-                console.log('Initializing Terminal with connection token...');
-                updateChecklistItem('terminal-check', 'pending', '⏳', 'Connecting...');
-                
                 terminal = StripeTerminal.create({
-                    onFetchConnectionToken: () => Promise.resolve(connectionToken),
-                    onUnexpectedReaderDisconnect: () => {
-                        console.log('Reader unexpectedly disconnected');
-                        
-                        // Cancel auto-close if active
-                        if (countdownInterval) {
-                            cancelAutoClose();
-                        }
-                        
-                        isConnected = false;
-                        connectedReader = null;
-                        readerData = null;
-                        updateConnectionStatus('disconnected', 'Reader Disconnected');
-                        showStatus('⚠️ Reader was unexpectedly disconnected. Please reconnect.', 'warning');
-                        document.getElementById('reader-info').classList.add('hidden');
-                        document.getElementById('completion-message').classList.add('hidden');
-                        document.getElementById('connect-btn').disabled = false;
-                        document.getElementById('connect-btn').innerHTML = 'Connect Reader';
-                        
-                        // Notify parent of unexpected disconnection
-                        notifyParent({
-                            type: 'UNEXPECTED_DISCONNECT',
-                            data: {
-                                message: 'Reader was unexpectedly disconnected',
-                                timestamp: new Date().toISOString()
-                            }
-                        });
-                    }
+                    onFetchConnectionToken: fetchConnectionToken,
+                    onUnexpectedReaderDisconnect: unexpectedDisconnect,
                 });
 
-                console.log('Terminal initialized successfully');
+                console.log('Terminal SDK initialized successfully');
                 prerequisitesState.terminalReady = true;
                 updateChecklistItem('terminal-check', 'completed', '✅', 'Ready');
-                updateConnectButtonState();
                 
                 notifyParent({
                     type: 'TERMINAL_INITIALIZED',
-                    data: { success: true }
+                    data: {
+                        success: true
+                    }
                 });
                 
             } catch (error) {
-                console.error('Terminal initialization failed:', error);
+                console.error('Failed to initialize Terminal:', error);
                 prerequisitesState.terminalReady = false;
                 updateChecklistItem('terminal-check', 'error', '❌', 'Failed');
-                updateConnectButtonState();
-                showStatus(`❌ Terminal initialization failed: ${error.message}`, 'error');
+                showStatus(`❌ Failed to initialize Terminal: ${error.message}`, 'error');
+                
                 notifyParent({
-                    type: 'TERMINAL_INITIALIZATION_FAILED',
-                    data: { 
-                        error: error.message,
-                        success: false 
+                    type: 'TERMINAL_INIT_ERROR',
+                    data: {
+                        error: error.message
                     }
                 });
+                
+                throw error;
             }
         }
 
+        // Handle unexpected disconnection
+        function unexpectedDisconnect() {
+            console.warn('Reader unexpectedly disconnected');
+            isConnected = false;
+            connectedReader = null;
+            updateConnectionStatus('disconnected', 'Reader Disconnected (Unexpected)');
+            showStatus('⚠️ Reader unexpectedly disconnected. Please reconnect.', 'warning');
+            
+            notifyParent({
+                type: 'READER_DISCONNECTED',
+                data: {
+                    reason: 'unexpected',
+                    success: false
+                }
+            });
+        }
+
+        // ============================================
+        // READER CONNECTION
+        // ============================================
+        
         // Connect to reader
         async function connectReader() {
             if (!terminal) {
-                showStatus('❌ Terminal not initialized. Please refresh and try again.', 'error');
-                return;
-            }
-
-            if (isConnected) {
-                showStatus('✅ Reader is already connected.', 'success');
+                showStatus('❌ Terminal not initialized. Please refresh the page.', 'error');
                 return;
             }
 
             try {
-                showLoading('connect-btn', 'Connecting...');
-                showStatus('🔍 Searching for M2 readers... Make sure your reader is turned on and nearby.', 'info');
-                
-                notifyParent({
-                    type: 'CONNECTION_STARTED',
-                    data: { status: 'searching' }
-                });
+                showLoading('connect-btn', 'Connecting');
+                showStatus('🔍 Searching for nearby M2 readers...', 'info');
 
                 // Discover readers
-                const discoverResult = await terminal.discoverReaders({
-                    simulated: false,
-                    location: CONFIG.locationId
+                console.log('Starting reader discovery...');
+                const config = { simulated: false };
+                discoverResult = await terminal.discoverReaders(config);
+
+                if (discoverResult.discoveredReaders.length === 0) {
+                    hideLoading('connect-btn', 'Connect Reader');
+                    showStatus('❌ No readers found. Make sure your M2 reader is powered on and nearby.', 'error');
+                    
+                    notifyParent({
+                        type: 'NO_READERS_FOUND',
+                        data: {
+                            success: false,
+                            message: 'No readers discovered'
+                        }
+                    });
+                    return;
+                }
+
+                console.log(`Found ${discoverResult.discoveredReaders.length} reader(s)`);
+                const selectedReader = discoverResult.discoveredReaders[0];
+                console.log('Connecting to reader:', selectedReader.serial_number);
+
+                showStatus(`📡 Connecting to reader ${selectedReader.serial_number}...`, 'info');
+
+                // Connect to the reader
+                const connectResult = await terminal.connectReader(selectedReader, {
+                    fail_if_in_use: false
                 });
 
-                if (discoverResult.error) {
-                    throw new Error(discoverResult.error.message);
-                }
-
-                const m2Readers = discoverResult.discoveredReaders.filter(
-                    reader => reader.device_type === 'stripe_m2'
-                );
-
-                if (m2Readers.length === 0) {
-                    throw new Error('No M2 readers found. Make sure your reader is on and nearby.');
-                }
-
-                showStatus(`📱 Found ${m2Readers.length} M2 reader(s). Connecting to the first one...`, 'info');
-
-                // Connect to the first M2 reader found
-                const connectResult = await terminal.connectReader(m2Readers[0]);
-
-                if (connectResult.error) {
-                    throw new Error(connectResult.error.message);
-                }
-
+                console.log('Reader connected successfully:', connectResult.reader);
+                isConnected = true;
                 connectedReader = connectResult.reader;
-                
-                // Extract reader data for database storage
-                readerData = {
-                    stripe_reader_id: connectedReader.id,
-                    serial_number: connectedReader.serial_number,
-                    device_type: connectedReader.device_type,
-                    label: connectedReader.label || `M2-${connectedReader.serial_number}`,
-                    location_id: connectedReader.location,
-                    battery_level: connectedReader.battery_level,
-                    device_sw_version: connectedReader.device_sw_version,
-                    ip_address: connectedReader.ip_address,
-                    status: 'connected',
-                    business_id: CONFIG.businessId,
-                    connected_at: new Date().toISOString()
-                };
 
-                // Save reader data to database via webhook
-                await callWebhook(CONFIG.readerStorageWebhook, {
-                    ...readerData,
-                    metadata: {
-                        source: 'reader_connection_page',
-                        timestamp: new Date().toISOString()
+                // Update UI
+                updateConnectionStatus('connected', `M2 Connected - ${connectedReader.battery_level || 'Unknown'}% battery`);
+                updateReaderDetails(connectedReader);
+                hideLoading('connect-btn', 'Connect Reader');
+                showStatus('✅ Reader connected successfully!', 'success');
+
+                // Store reader info in webhook
+                await storeReaderInfo(connectedReader);
+
+                // Notify parent of successful connection
+                notifyParent({
+                    type: 'READER_CONNECTED',
+                    data: {
+                        reader: {
+                            id: connectedReader.id,
+                            serial_number: connectedReader.serial_number,
+                            device_type: connectedReader.device_type,
+                            battery_level: connectedReader.battery_level,
+                            status: connectedReader.status
+                        },
+                        success: true
                     }
                 });
 
-                // Connection successful
-                isConnected = true;
-                updateConnectionStatus('connected', 'M2 Reader Connected');
-                updateReaderInfo(connectedReader);
-                hideLoading('connect-btn', '✓ Connected Successfully');
-                document.getElementById('connect-btn').disabled = true;
-                document.getElementById('location-btn').style.display = 'none';
-                
-                showCompletionMessage();
-                showStatus('✅ Reader connected and saved successfully! Your reader is now operational and ready to accept payments.', 'success');
+                // Auto-close if configured
+                if (CONFIG.autoClose && CONFIG.embeddedMode) {
+                    showStatus(`✅ Connection successful! Closing in ${CONFIG.autoCloseDelay / 1000} seconds...`, 'success');
+                    setTimeout(() => {
+                        notifyParent({
+                            type: 'AUTO_CLOSE',
+                            data: { reason: 'connection_successful' }
+                        });
+                    }, CONFIG.autoCloseDelay);
+                }
 
             } catch (error) {
-                console.error('Connection failed:', error);
-                updateConnectionStatus('disconnected', 'Connection Failed');
-                hideLoading('connect-btn', 'Retry Connection');
-                
-                if (error.message.includes('Bluetooth')) {
-                    document.getElementById('bluetooth-instructions').classList.remove('hidden');
-                } 
-                
-                if (error.message.includes('location') || error.message.includes('Location')) {
-                    document.getElementById('location-permission-help').classList.remove('hidden');
-                }
-                
+                console.error('Connection error:', error);
+                hideLoading('connect-btn', 'Connect Reader');
                 showStatus(`❌ Connection failed: ${error.message}`, 'error');
                 
                 notifyParent({
-                    type: 'CONNECTION_FAILED',
+                    type: 'CONNECTION_ERROR',
                     data: {
                         error: error.message,
                         success: false
@@ -1257,49 +974,120 @@
             }
         }
 
-        // Check permissions proactively
-        async function checkPermissions() {
-            const results = {
-                bluetooth: false,
-                location: false,
-                locationState: 'unknown',
-                supported: false
-            };
-
-            // Check Web Bluetooth support
-            results.supported = !!navigator.bluetooth;
-
-            // Check location permission status
-            if (navigator.permissions) {
-                try {
-                    const locationPermission = await navigator.permissions.query({ name: 'geolocation' });
-                    results.location = locationPermission.state === 'granted';
-                    results.locationState = locationPermission.state; // 'granted', 'denied', 'prompt'
-                } catch (error) {
-                    console.log('Could not check location permission status:', error);
-                }
+        // Disconnect from reader
+        async function disconnectReader() {
+            if (!terminal || !isConnected) {
+                showStatus('❌ No reader connected.', 'error');
+                return;
             }
 
-            return results;
+            try {
+                showLoading('disconnect-btn', 'Disconnecting');
+                showStatus('🔌 Disconnecting reader...', 'info');
+
+                await terminal.disconnectReader();
+
+                console.log('Reader disconnected successfully');
+                isConnected = false;
+                connectedReader = null;
+
+                updateConnectionStatus('disconnected', 'M2 Reader Disconnected');
+                hideLoading('disconnect-btn', 'Disconnect');
+                showStatus('✅ Reader disconnected successfully.', 'success');
+
+                notifyParent({
+                    type: 'READER_DISCONNECTED',
+                    data: {
+                        reason: 'user_initiated',
+                        success: true
+                    }
+                });
+
+            } catch (error) {
+                console.error('Disconnection error:', error);
+                hideLoading('disconnect-btn', 'Disconnect');
+                showStatus(`❌ Disconnection failed: ${error.message}`, 'error');
+            }
         }
 
-        // Manual location permission request
-        async function requestLocationPermission() {
+        // Store reader information via webhook
+        async function storeReaderInfo(reader) {
+            if (!CONFIG.readerStorageWebhook) {
+                console.warn('No reader storage webhook configured');
+                return;
+            }
+
             try {
-                showLoading('location-btn', 'Requesting...');
-                updateChecklistItem('location-check', 'pending', '⏳', 'Requesting...');
+                console.log('Storing reader information...');
+                const response = await fetch(CONFIG.readerStorageWebhook, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        businessId: CONFIG.businessId,
+                        locationId: CONFIG.locationId,
+                        reader: {
+                            id: reader.id,
+                            serial_number: reader.serial_number,
+                            label: reader.label,
+                            device_type: reader.device_type,
+                            battery_level: reader.battery_level,
+                            status: reader.status,
+                            location: reader.location
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Storage webhook failed (${response.status}): ${errorText}`);
+                }
+
+                console.log('Reader information stored successfully');
                 
+                notifyParent({
+                    type: 'READER_STORED',
+                    data: {
+                        success: true,
+                        readerId: reader.id
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error storing reader information:', error);
+                showStatus(`⚠️ Reader connected but failed to save: ${error.message}`, 'warning');
+                
+                notifyParent({
+                    type: 'READER_STORAGE_ERROR',
+                    data: {
+                        error: error.message,
+                        success: false
+                    }
+                });
+            }
+        }
+
+        // ============================================
+        // PERMISSION REQUEST
+        // ============================================
+        
+        async function requestLocationPermission() {
+            showLoading('location-btn', 'Requesting Permission');
+            showStatus('📍 Requesting location permission...', 'info');
+
+            try {
                 await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
-                            console.log('Location permission granted:', position);
+                            console.log('Location permission granted');
                             prerequisitesState.locationPermission = true;
                             updateChecklistItem('location-check', 'completed', '✅', 'Granted');
                             updateConnectButtonState();
-                            showStatus('✅ Location permission granted! You can now connect your reader.', 'success');
                             document.getElementById('location-btn').style.display = 'none';
+                            document.getElementById('location-permission-help').classList.add('hidden');
+                            showStatus('✅ Location permission granted! You can now connect your reader.', 'success');
                             
-                            // Notify parent of permission granted
                             notifyParent({
                                 type: 'PERMISSION_GRANTED',
                                 data: {
@@ -1308,10 +1096,11 @@
                                 }
                             });
                             
-                            resolve(position);
+                            resolve();
                         },
                         (error) => {
-                            console.log('Location permission error:', error);
+                            console.error('Location permission error:', error);
+                            
                             if (error.code === error.PERMISSION_DENIED) {
                                 prerequisitesState.locationPermission = false;
                                 updateChecklistItem('location-check', 'error', '❌', 'Denied');
@@ -1319,7 +1108,6 @@
                                 document.getElementById('location-permission-help').classList.remove('hidden');
                                 showStatus('❌ Location permission denied. Please see instructions below to enable it manually.', 'error');
                                 
-                                // Notify parent of permission denied
                                 notifyParent({
                                     type: 'PERMISSION_DENIED',
                                     data: {
@@ -1331,7 +1119,6 @@
                                 
                                 reject(new Error('Location permission denied'));
                             } else {
-                                // Other errors (position unavailable, timeout) - still allow connection
                                 prerequisitesState.locationPermission = true;
                                 updateChecklistItem('location-check', 'warning', '⚠️', 'Unavailable');
                                 updateConnectButtonState();
@@ -1400,7 +1187,6 @@
             updateConnectButtonState();
             showStatus(statusMessage, statusType);
             
-            // Notify parent of permission status
             notifyParent({
                 type: 'PERMISSION_STATUS',
                 data: {
@@ -1425,17 +1211,23 @@
         // Check both permissions and connection status
         async function checkPermissionsAndConnection() {
             if (isConnected && connectedReader) {
-                // Show connection status if connected
                 checkConnection();
             } else {
-                // Show permission status if not connected
                 await showPermissionStatus();
             }
         }
 
-        // Initialize the application
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Reader Connection Page initialized');
+            
+            // Check if Apple device and show warning
+            if (isAppleDevice()) {
+                showAppleDeviceWarning();
+            }
             
             // Notify parent that page is ready
             notifyParent({
@@ -1446,7 +1238,8 @@
                         hasConnectionToken: !!CONFIG.connectionToken,
                         hasWebhooks: !!(CONFIG.connectionTokenWebhook && CONFIG.readerStorageWebhook),
                         autoClose: CONFIG.autoClose,
-                        autoCloseDelay: CONFIG.autoCloseDelay
+                        autoCloseDelay: CONFIG.autoCloseDelay,
+                        isAppleDevice: isAppleDevice()
                     }
                 }
             });
@@ -1483,10 +1276,11 @@
                 connectionTokenWebhook: CONFIG.connectionTokenWebhook ? 'Webhook provided' : 'Not provided',
                 readerStorageWebhook: CONFIG.readerStorageWebhook ? 'Provided' : 'Missing',
                 tokenMethod: CONFIG.connectionToken ? 'Pre-generated' : 'Webhook generation',
-                embeddedMode: CONFIG.embeddedMode
+                embeddedMode: CONFIG.embeddedMode,
+                isAppleDevice: isAppleDevice()
             });
 
-            // Improved initialization flow: Check all prerequisites automatically
+            // Improved initialization flow
             try {
                 // Step 1: Check browser support and permissions
                 await showPermissionStatus();
