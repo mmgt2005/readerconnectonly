@@ -583,15 +583,29 @@
         }
 
         /**
+         * Detects if the user is using the Bluefy browser
+         */
+        function isBluefy() {
+            return (navigator.userAgent || '').includes('Bluefy');
+        }
+
+        /**
          * Shows warning for Apple users to use Bluefy browser
+         * Only shows if NOT already using Bluefy
          */
         function showAppleDeviceWarning() {
+            // Don't show warning if already using Bluefy
+            if (isBluefy()) {
+                console.log('Bluefy browser detected - no warning needed');
+                return;
+            }
+            
             const warningElement = document.getElementById('apple-warning');
             if (warningElement) {
                 warningElement.classList.remove('hidden');
                 
                 // Optionally log device info for debugging
-                console.log('Apple device detected:', {
+                console.log('Apple device detected (not using Bluefy):', {
                     iOS: isIOS(),
                     macOS: isMacOS(),
                     userAgent: navigator.userAgent,
@@ -604,6 +618,7 @@
                     data: {
                         iOS: isIOS(),
                         macOS: isMacOS(),
+                        usingBluefy: false,
                         message: 'User should use Bluefy browser'
                     }
                 });
@@ -613,16 +628,23 @@
         // ============================================
         // CONFIGURATION
         // ============================================
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Helper function to get parameter with both camelCase and snake_case support
+        function getParam(camelCase, snake_case) {
+            return urlParams.get(camelCase) || urlParams.get(snake_case) || '';
+        }
+        
         const CONFIG = {
-            publishableKey: new URLSearchParams(window.location.search).get('publishableKey') || '',
-            locationId: new URLSearchParams(window.location.search).get('locationId') || '',
-            businessId: new URLSearchParams(window.location.search).get('businessId') || '',
-            connectionToken: new URLSearchParams(window.location.search).get('connectionToken') || '',
-            connectionTokenWebhook: new URLSearchParams(window.location.search).get('connectionTokenWebhook') || '',
-            readerStorageWebhook: new URLSearchParams(window.location.search).get('readerStorageWebhook') || '',
-            embeddedMode: new URLSearchParams(window.location.search).get('embedded') === 'true',
-            autoClose: new URLSearchParams(window.location.search).get('autoClose') === 'true',
-            autoCloseDelay: parseInt(new URLSearchParams(window.location.search).get('autoCloseDelay')) || 2000
+            publishableKey: getParam('publishableKey', 'publishable_key'),
+            locationId: getParam('locationId', 'location_id'),
+            businessId: getParam('businessId', 'business_id'),
+            connectionToken: getParam('connectionToken', 'connection_token'),
+            connectionTokenWebhook: getParam('connectionTokenWebhook', 'connection_token_webhook'),
+            readerStorageWebhook: getParam('readerStorageWebhook', 'reader_storage_webhook'),
+            embeddedMode: urlParams.get('embedded') === 'true',
+            autoClose: urlParams.get('autoClose') === 'true' || urlParams.get('auto_close') === 'true',
+            autoCloseDelay: parseInt(urlParams.get('autoCloseDelay') || urlParams.get('auto_close_delay')) || 2000
         };
 
         // ============================================
@@ -1239,7 +1261,8 @@
                         hasWebhooks: !!(CONFIG.connectionTokenWebhook && CONFIG.readerStorageWebhook),
                         autoClose: CONFIG.autoClose,
                         autoCloseDelay: CONFIG.autoCloseDelay,
-                        isAppleDevice: isAppleDevice()
+                        isAppleDevice: isAppleDevice(),
+                        isBluefy: isBluefy()
                     }
                 }
             });
@@ -1277,7 +1300,8 @@
                 readerStorageWebhook: CONFIG.readerStorageWebhook ? 'Provided' : 'Missing',
                 tokenMethod: CONFIG.connectionToken ? 'Pre-generated' : 'Webhook generation',
                 embeddedMode: CONFIG.embeddedMode,
-                isAppleDevice: isAppleDevice()
+                isAppleDevice: isAppleDevice(),
+                isBluefy: isBluefy()
             });
 
             // Improved initialization flow
